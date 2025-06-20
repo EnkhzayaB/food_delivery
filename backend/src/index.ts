@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import foodsRouter from "./routes/food.route.js";
-import foodOrdersRouter from "./routes/foodOrder.route.js";
+import orderRouter from "./routes/order.route.js";
 import CategoryRouter from "./routes/foodCategory.route.js";
 import authRouter from "./routes/auth.route.js";
 
@@ -15,7 +15,7 @@ server.use(express.json());
 const port = 3000;
 
 server.use("/food", foodsRouter);
-server.use("/food-order", foodOrdersRouter);
+server.use("/order", orderRouter);
 server.use("/food-category", CategoryRouter);
 server.use("/auth", authRouter);
 

@@ -1,7 +1,19 @@
 import { Request, Response } from "express";
 import { Order } from "../models/order.model.js";
 
-export const getAllFoodOrders = async (req: Request, res: Response) => {
+const calculateTotalPrice = (order: any) => {
+  let total = 0;
+  const items = order.foodOrderItems || [];
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    total += item.price * item.quantity;
+  }
+
+  return total;
+};
+
+export const getAllOrders = async (req: Request, res: Response) => {
   try {
     const orders = await Order.find();
     res.json({ success: true, data: orders });
@@ -10,7 +22,7 @@ export const getAllFoodOrders = async (req: Request, res: Response) => {
   }
 };
 
-export const getFoodOrderById = async (req: Request, res: Response) => {
+export const getOrderById = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
     const order = await Order.findById(orderId);
@@ -21,23 +33,23 @@ export const getFoodOrderById = async (req: Request, res: Response) => {
   }
 };
 
-export const createFoodOrder = async (req: Request, res: Response) => {
+export const createOrder = async (req: Request, res: Response) => {
   try {
     const order = req.body;
-    const createFoodOrder = await Order.create(order);
+    const createOrder = await Order.create(order);
 
-    res.json({ success: true, data: createFoodOrder });
+    res.json({ success: true, data: createOrder });
   } catch (error) {
     res.status(402).json({ success: false, error: error });
   }
 };
 
-export const updateFoodOrder = async (req: Request, res: Response) => {
+export const updateOrder = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
-    const updateFoodOrder = req.body;
+    const updateOrder = req.body;
 
-    const order = await Order.findByIdAndUpdate(orderId, updateFoodOrder, {
+    const order = await Order.findByIdAndUpdate(orderId, updateOrder, {
       new: true,
     });
     res.status(202).json({ success: true, data: order });
@@ -46,12 +58,12 @@ export const updateFoodOrder = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteFoodOrder = async (req: Request, res: Response) => {
+export const deleteOrder = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
-    const deleteFoodOrder = req.body;
+    const deleteOrder = req.body;
 
-    const order = await Order.findByIdAndDelete(orderId, deleteFoodOrder);
+    const order = await Order.findByIdAndDelete(orderId, deleteOrder);
     res.status(202).json({ success: true, data: order });
   } catch (error) {
     res.status(202).json({ success: true, error: error });
