@@ -13,7 +13,11 @@ export const getCategory = async (req: Request, res: Response) => {
 export const createCategory = async (req: Request, res: Response) => {
   try {
     const category = req.body;
-    const createCategory = await Category.create(category);
+    const createCategory = await Category.create({
+      ...category,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
     res.json({ success: true, data: createCategory });
   } catch (error) {
@@ -39,6 +43,18 @@ export const updateCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteCategory = (req: Request, res: Response) => {
-  res.json("deleteFoodCategory deer delete huselt irlee");
+export const deleteCategory = async (req: Request, res: Response) => {
+  try {
+    const { categoryId } = req.params;
+    const deleteCategory = req.body;
+
+    const category = await Category.findByIdAndDelete(
+      categoryId,
+      deleteCategory
+    );
+
+    res.status(202).json({ success: true, data: category });
+  } catch (error) {
+    res.status(202).json({ success: true, error: error });
+  }
 };

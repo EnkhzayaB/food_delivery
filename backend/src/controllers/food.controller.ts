@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Food } from "../models/index.js";
-import { request } from "http";
 
 export const getAllFoods = async (request: Request, response: Response) => {
   try {
@@ -25,7 +24,11 @@ export const getFoodByid = async (request: Request, response: Response) => {
 export const createFood = async (request: Request, response: Response) => {
   try {
     const food = request.body;
-    const createFood = await Food.create(food);
+    const createFood = await Food.create({
+      ...food,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
     response.json({ success: true, data: createFood });
   } catch (error) {
@@ -58,3 +61,9 @@ export const deleteFood = async (request: Request, response: Response) => {
     response.status(202).json({ success: true, error: error });
   }
 };
+
+// {
+// "foodname":"bansh",
+// "price":9999,
+// "image": "google.com",
+// "ingredients":"guril, mah, nogoo"}

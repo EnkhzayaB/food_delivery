@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 import { Order } from "../models/order.model.js";
 
-const calculateTotalPrice = (order: any) => {
-  let total = 0;
-  const items = order.foodOrderItems || [];
+// const calculateTotalPrice = (order: any) => {
+//   let total = 0;
+//   const items = order.foodOrderItems || [];
 
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    total += item.price * item.quantity;
-  }
+//   for (let i = 0; i < items.length; i++) {
+//     const item = items[i];
+//     total += item.price * item.quantity;
+//   }
 
-  return total;
-};
+//   return total;
+// };
 
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
@@ -36,7 +36,11 @@ export const getOrderById = async (req: Request, res: Response) => {
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const order = req.body;
-    const createOrder = await Order.create(order);
+    const createOrder = await Order.create({
+      ...order,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
     res.json({ success: true, data: createOrder });
   } catch (error) {
@@ -51,6 +55,9 @@ export const updateOrder = async (req: Request, res: Response) => {
 
     const order = await Order.findByIdAndUpdate(orderId, updateOrder, {
       new: true,
+      ...updateOrder,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     res.status(202).json({ success: true, data: order });
   } catch (error) {
@@ -69,3 +76,20 @@ export const deleteOrder = async (req: Request, res: Response) => {
     res.status(202).json({ success: true, error: error });
   }
 };
+
+// { "user": "zaya",
+//  " totalPrice": 29000,
+//  " foodOrderItems": [
+//     {
+//       "foodName": "pancake",
+//      " price": 12000,
+//       "quantity": 1,
+//       "ingredients": "guril, sahar"
+//     }, {
+//       "foodName": "pizza",
+//      " price": 13000,
+//       "quantity": 3,
+//        "ingredients": "guril, hiam"
+//     }
+//   ],
+//  "status": "PENDING"}

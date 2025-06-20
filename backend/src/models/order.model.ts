@@ -6,14 +6,13 @@ const order = new Schema({
   totalPrice: Number,
   foodOrderItems: [
     {
-      name: String,
+      foodName: String,
       price: Number,
       quantity: Number,
+      ingredients: String,
     },
   ],
   status: String,
-  ingredients: String,
-  date: Number,
 });
 
 export const Order = model("Order", order);
