@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
-import { Auth } from "../models/index.js";
-export const refreshAuth = async (req: Request, res: Response) => {};
+import { User } from "../models/index.js";
+import { request } from "http";
 
-export const signInAuth = (req: Request, res: Response) => {
+
+export const refreshAuth = async (req: Request, res: Response) => {
+  res.send("refresh d deer post huslee irlee");
+}
+export const signInAuth = async (req: Request, res: Response) => {
   res.send("signInAuth deer post huslee irlee");
 };
 
