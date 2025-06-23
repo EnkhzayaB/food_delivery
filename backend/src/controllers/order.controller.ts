@@ -36,11 +36,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const order = req.body;
-    const createOrder = await Order.create({
-      ...order,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    const createOrder = await Order.create({ order });
 
     res.json({ success: true, data: createOrder });
   } catch (error) {
@@ -74,6 +70,15 @@ export const deleteOrder = async (req: Request, res: Response) => {
     res.status(202).json({ success: true, data: order });
   } catch (error) {
     res.status(202).json({ success: true, error: error });
+  }
+};
+
+export const deleteAllOrders = async (req: Request, res: Response) => {
+  try {
+    const orders = await Order.find();
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(303).json({ success: false, error: error });
   }
 };
 

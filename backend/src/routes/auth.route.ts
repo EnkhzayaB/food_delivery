@@ -1,20 +1,20 @@
 import express from "express";
 import {
-  refreshAuth,
-  signInAuth,
-  singUpAuth,
-  rePasswordRequestAuth,
-  verifyRePasswordReqAuth,
-  rePasswordAuth,
+  refresh,
+  signIn,
+  singUp,
+  rePasswordRequest,
+  verifyRePasswordReq,
+  rePassword,
 } from "../controllers/auth.controller.js";
 
 const authRouter = express.Router();
 
-authRouter.get("/refresh", refreshAuth);
-authRouter.post("/sign-in", signInAuth);
-authRouter.post("/sign-up", singUpAuth);
-authRouter.post("/reset-password-request", rePasswordRequestAuth);
-authRouter.get("/verify-reset-password-request", verifyRePasswordReqAuth);
-authRouter.post("/reset-password", rePasswordAuth);
+authRouter.get("/refresh", refresh);
+authRouter.post("/sign-in", signIn);
+authRouter.post("/sign-up", singUp);
+authRouter.post("/reset-password-request", rePasswordRequest);
+authRouter.get("/verify-reset-password-request", verifyRePasswordReq);
+authRouter.post("/reset-password", rePassword);
 
 export default authRouter;

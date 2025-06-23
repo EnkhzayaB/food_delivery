@@ -5,7 +5,7 @@ const food = new Schema({
   foodname: String,
   price: Number,
   image: String,
-  ingredients: String,
+  ingredients: [String],
   createdAt: Date,
   updatedAt: Date,
 });
