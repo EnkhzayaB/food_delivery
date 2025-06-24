@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import foodsRouter from "./routes/food.route.js";
 import orderRouter from "./routes/order.route.js";
 import categoryRouter from "./routes/category.route.js";
-import authRouter from "./routes/auth.route.js";
+import userRouter from "./routes/user.route.js";
 
 mongoose.connect(
   "mongodb+srv://Enkhzayabymba559:Gk9axxWzEYDZbH2r@cluster0.85nbryh.mongodb.net/"
@@ -17,7 +17,7 @@ const port = 3000;
 server.use("/food", foodsRouter);
 server.use("/order", orderRouter);
 server.use("/category", categoryRouter);
-server.use("/auth", authRouter);
+server.use("/auth", userRouter);
 
 server.get("/", (_request, response) => {
   response.send("Hello zaya");

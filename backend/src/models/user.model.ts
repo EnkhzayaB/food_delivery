@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { model, Schema } from "mongoose";
-
 const user = new Schema({
   email: { type: String, required: true },
   passport: String,

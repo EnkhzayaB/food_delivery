@@ -24,11 +24,7 @@ export const getFoodByid = async (request: Request, response: Response) => {
 export const createFood = async (request: Request, response: Response) => {
   try {
     const food = request.body;
-    const createFood = await Food.create({
-      ...food,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    const createFood = await Food.create(food);
 
     response.json({ success: true, data: createFood });
   } catch (error) {

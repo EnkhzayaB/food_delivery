@@ -1,10 +1,11 @@
 import { model, Schema, Types } from "mongoose";
 import { FoodOrderItem } from "./foodOrderItems.model.js";
+import { foodOrderItem } from "./foodOrderItems.model.js";
 
 const order = new Schema({
   user: { type: Types.ObjectId, ref: "User" },
   totalPrice: Number,
-  foodOrderItems: [FoodOrderItem],
+  foodOrderItems: [String],
   status: {
     type: String,
     enum: ["pending", "delivered", "canceled"],
