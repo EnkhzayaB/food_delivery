@@ -45,19 +45,19 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-export const updateOrder = async (request: Request, response: Response) => {
-  try {
-    const { orderId } = request.params;
-    const updateOrder = request.body;
+// export const updateOrder = async (request: Request, response: Response) => {
+//   try {
+//     const { orderId } = request.params;
+//     const updateOrder = request.body;
 
-    const order = await Order.findByIdAndUpdate(orderId, updateOrder, {
-      new: true,
-    });
-    response.status(202).json({ success: true, data: order });
-  } catch (error) {
-    response.status(403).json({ success: true, error: error });
-  }
-};
+//     const order = await Order.findByIdAndUpdate(orderId, updateOrder, {
+//       new: true,
+//     });
+//     response.status(202).json({ success: true, data: order });
+//   } catch (error) {
+//     response.status(403).json({ success: true, error: error });
+//   }
+// };
 
 // {"user": "6858f722e2ca28c9f065da78",
 // "foodOrderItems": ["685c5451f012563f0ece9c6a", "685c58b7ded25782b44f88c9"],
