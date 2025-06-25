@@ -1,11 +1,9 @@
 import { model, Schema, Types } from "mongoose";
-import { FoodOrderItem } from "./foodOrderItems.model.js";
-import { foodOrderItem } from "./foodOrderItems.model.js";
 
 const order = new Schema({
-  user: { type: Types.ObjectId, ref: "User" },
-  totalPrice: Number,
-  foodOrderItems: [String],
+  user: { type: Types.ObjectId, ref: "User", required: true },
+  foodOrderItems: [{ type: Types.ObjectId, ref: "FoodOrderItem" }],
+  totalPrice: { type: Number, required: true },
   status: {
     type: String,
     enum: ["pending", "delivered", "canceled"],
@@ -14,30 +12,3 @@ const order = new Schema({
 });
 
 export const Order = model("Order", order);
-
-// order: [
-//   {
-//     user: "enkhzaya@gmail.com",
-//     totalPrice: 45000,
-//     foodOrderItems: [
-//       {
-//         food: {
-//           foodname: "hawaii pizza",
-//           price: 45000,
-//           image: "pizza zurag",
-//           ingredient: ["cheese", "ham"],
-//         },
-//         quantity: 2,
-//       },
-//       {
-//         food: {
-//           foodname: "salami pizza",
-//           price: 20000,
-//           image: "pizza zurag",
-//           ingredient: ["cheese", "ham"],
-//         },
-//         quantity: 1,
-//       },
-//     ],
-//   },
-// ];

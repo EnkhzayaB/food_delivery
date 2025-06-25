@@ -1,81 +1,66 @@
 import { Request, Response } from "express";
 import { User } from "../models/user.model.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { get } from "http";
 
-export const refresh = async (req: Request, res: Response) => {
-  res.send("refresh d deer post huslee irlee");
-};
-export const signIn = async (req: Request, res: Response) => {
+export const getAllUser = async (req: Request, res: Response) => {
   try {
-    const { name, password } = req.body;
-
-    const user = await User.findOne({ name });
-
-    bcrypt.compare(password, user.password, (err, result) => {
-      if (result) {
-        res.status(200).json({
-          success: true,
-          message: "Authenticated",
-        });
-      } else {
-        res.status(200).json({
-          success: false,
-          message: "not authenticated",
-        });
-      }
-    });
+    const users = await User.find();
+    res.json({ success: true, data: users });
   } catch (error) {
-    res.status(444).json({
-      success: false,
-      error: error,
-    });
+    res.status(303).json({ success: false, error: error });
   }
 };
 
-export const singUp = async (req: Request, res: Response) => {
-  const { name, password } = req.body;
-
+export const getUser = async (req: Request, res: Response) => {
   try {
-    const saltRounds = 10;
-    const salt = await bcrypt.genSalt(saltRounds);
+    const { userId } = req.params;
+    const user = await User.findById(userId);
 
-    bcrypt.hash(password, salt, async (error, hash) => {
-      const createdUser = await User.create({
-        name: name,
-        password: hash,
-      });
-
-      res.status(200).json({
-        success: true,
-        data: createdUser,
-      });
-    });
+    res.status(202).json({ success: true, data: user });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      error: error,
-    });
+    res.status(402).json({ success: true, error: error });
   }
 };
 
-export const rePasswordRequest = (req: Request, res: Response) => {
-  res.send("rePasswordRequest deer post huselt irlee");
+export const createUser = async (req: Request, res: Response) => {
+  try {
+    const user = await User.create(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ success: false, error });
+  }
 };
 
-export const verifyRePasswordReq = (req: Request, res: Response) => {
-  res.send("verifyRePasswordReqAuth deer get huselt irlee");
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const updateUser = req.body;
+
+    const user = await User.findByIdAndUpdate(userId, updateUser, {
+      new: true,
+    });
+    res.status(202).json({ success: true, data: user });
+  } catch (error) {
+    res.status(403).json({ success: true, error: error });
+  }
 };
 
-export const rePassword = (req: Request, res: Response) => {
-  res.send("rePasswordAuth deer post huselt irlee");
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const deleteUser = req.body;
+
+    const user = await User.findByIdAndDelete(userId, deleteUser);
+    res.status(202).json({ success: true, data: user });
+  } catch (error) {
+    res.status(202).json({ success: true, error: error });
+  }
 };
 
 // {
-//       "email": "zaya@gmail.com",
-//   "passport": "hdshfhdfs",
-//   "phoneNumber": 89548768546,
-//   "address": "fdsfgdsgfgds",
-//   "role": "user",
-//   "isVerified": "true"
-// }
+//     "email": "Alexkomlev.com",
+//     "password": "password123",
+//     "phoneNumber": "1234567890",
+//     "address": "Ulaanbaatar, Mongolia",
+//     "role": "USER"
+//   }
