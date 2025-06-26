@@ -7,7 +7,7 @@ import categoryRouter from "./routes/category.route.js";
 import userRouter from "./routes/user.route.js";
 import foodOrderItemRouter from "./routes/foodOrderItems.route.js";
 
-dotenv.config(); // env nuh values
+dotenv.config(); // env buh values
 
 mongoose.connect(process.env.MONGO_URL as string);
 
