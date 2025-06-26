@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
 import { Request, response, Response } from "express";
 
-const verifyToken = (request: Request, res: Response, next: any) => {
+const verifyToken = (request: any, res: Response, next: any) => {
   const token = request.header("Authorization");
   if (!token) return res.status(401).json({ error: "Access denied" });
   try {
-    const decoded = jwt.verify(token, "zaya-123-test");
-    request.userId = decoded.userId;
+    const decoded: any = jwt.verify(token, "zaya-123-test");
+    request.userId = decoded.userId as string;
     next();
   } catch (error) {
     response.status(400).json({ error: error });
