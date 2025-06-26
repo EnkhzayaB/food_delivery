@@ -1,19 +1,20 @@
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 import foodsRouter from "./routes/food.route.js";
 import orderRouter from "./routes/order.route.js";
 import categoryRouter from "./routes/category.route.js";
 import userRouter from "./routes/user.route.js";
 import foodOrderItemRouter from "./routes/foodOrderItems.route.js";
 
-mongoose.connect(
-  "mongodb+srv://Enkhzayabymba559:Gk9axxWzEYDZbH2r@cluster0.85nbryh.mongodb.net/"
-);
+dotenv.config(); // env nuh values
+
+mongoose.connect(process.env.MONGO_URL as string);
 
 const server = express();
 server.use(express.json());
 
-const port = 3000;
+const port = process.env.PORT;
 
 server.use("/food", foodsRouter);
 server.use("/order", orderRouter);
@@ -26,5 +27,5 @@ server.get("/", (_request, response) => {
 });
 
 server.listen(port, () => {
-  console.log("Server aslaa");
+  console.log(`Server aslaa ${port}`);
 });
