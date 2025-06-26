@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "../models/user.model.js";
-import { get } from "http";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const getAllUser = async (req: Request, res: Response) => {
   try {
@@ -54,6 +55,56 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(202).json({ success: true, data: user });
   } catch (error) {
     res.status(202).json({ success: true, error: error });
+  }
+};
+
+export const signIn = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    const comparedPassword = bcrypt.compare(password, user?.password || "");
+
+    const token = jwt.sign({ userId: user?.id || "" }, "zaya-123-test", {
+      expiresIn: "1h",
+    });
+    console.log(token);
+
+    if (!comparedPassword) {
+      res.status(200).json({
+        success: false,
+        message: "not authenticated",
+      });
+    }
+    {
+      res.status(200).json({
+        success: true,
+        message: "Authenticated",
+        token: token,
+      });
+    }
+  } catch (error) {
+    res.status(404).json({ success: false, error: error });
+  }
+};
+
+export const signUp = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  try {
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const createdUser = await User.create({
+      email: email,
+      password: hashedPassword,
+    });
+    res.status(200).json({
+      success: true,
+      data: createdUser,
+    });
+  } catch (error) {
+    res.status(404).json({ success: false, error: error });
   }
 };
 
