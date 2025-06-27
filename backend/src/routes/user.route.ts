@@ -8,7 +8,7 @@ import {
   signIn,
   signUp,
 } from "../controllers/user.controller.js";
-import verifyToken from "../middleware/auth.js";
+import verifyToken from "../middleware/auth.middleware.js";
 
 const userRouter = express.Router();
 

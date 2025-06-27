@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 
 const verifyToken = (request: any, res: Response, next: any) => {
   const token = request.header("Authorization");
@@ -9,7 +9,7 @@ const verifyToken = (request: any, res: Response, next: any) => {
     request.userId = decoded.userId as string;
     next();
   } catch (error) {
-    response.status(400).json({ error: error });
+    res.status(400).json({ error: error });
   }
 };
 

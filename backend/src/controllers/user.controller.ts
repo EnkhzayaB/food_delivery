@@ -109,7 +109,7 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 // {
-//     "email": "Alexkomlev.com",
+//     "email": "zayacom",
 //     "password": "password123",
 //     "phoneNumber": "1234567890",
 //     "address": "Ulaanbaatar, Mongolia",

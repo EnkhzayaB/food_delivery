@@ -7,14 +7,14 @@ import categoryRouter from "./routes/category.route.js";
 import userRouter from "./routes/user.route.js";
 import foodOrderItemRouter from "./routes/foodOrderItems.route.js";
 
-dotenv.config(); // env buh values
+dotenv.config();
 
-mongoose.connect(process.env.MONGO_URL as string);
+mongoose.connect((process.env.MONGO_URL as string) || "");
 
 const server = express();
 server.use(express.json());
 
-const port = process.env.PORT;
+const port = process.env.PORT || "";
 
 server.use("/food", foodsRouter);
 server.use("/order", orderRouter);

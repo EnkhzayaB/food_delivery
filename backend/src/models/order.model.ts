@@ -6,8 +6,8 @@ const order = new Schema({
   totalPrice: { type: Number, required: true },
   status: {
     type: String,
-    enum: ["pending", "delivered", "canceled"],
-    default: "pending",
+    enum: ["PENDING", "DELIVERED", "CANCELED"],
+    default: "PENDING",
   },
 });
 
