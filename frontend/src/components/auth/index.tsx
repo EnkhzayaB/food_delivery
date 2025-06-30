@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import SignUp from "@/components/auth/SignUp";
-import CreatePassword from "../CreatePassword";
+import CreatePassword from "./CreatePassword";
 import LogIn from "./LogIn";
 import Link from "next/link";
 
