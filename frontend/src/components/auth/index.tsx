@@ -69,7 +69,7 @@ export default function Auth() {
 
         <img
           src="/auth.jpg"
-          className="w-[60%] h-full rounded-[20px] absolute right-10 mt-20 mb-10 bg-cover bg-no-repeat bg-center"
+          className=" h-full rounded-[20px]  bg-cover bg-no-repeat bg-center"
         />
       </div>
     </div>

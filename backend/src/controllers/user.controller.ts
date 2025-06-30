@@ -114,5 +114,4 @@ export const signUp = async (req: Request, res: Response) => {
 //     "phoneNumber": "1234567890",
 //     "address": "Ulaanbaatar, Mongolia",
 //     "role": "USER"
-// admin
 //   }
