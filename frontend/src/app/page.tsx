@@ -1,5 +1,5 @@
 import Auth from "@/components/auth";
-import { MainHome } from "@/components/home";
+import { MainHome } from "@/components/home/page";
 export default function home() {
   return (
     <div>
