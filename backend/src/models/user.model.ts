@@ -10,7 +10,7 @@ const user = new Schema({
   phoneNumber: Number,
   address: String,
   role: { type: String, enum: ["USER", "ADMIN"], default: "USER" },
-  isVerified: Boolean,
+  isVerified: { type: Boolean, default: false },
   createdAt: Date,
   updatedAt: Date,
 });

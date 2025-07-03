@@ -4,7 +4,9 @@ import { FoodOrderItem } from "../models/foodOrderItems.model.js";
 export const createFoodOrderItem = async (req: Request, res: Response) => {
   try {
     const newItem = await FoodOrderItem.create(req.body);
-    res.status(201).json(newItem);
+    res
+      .status(201)
+      .json({ ...newItem, createdAt: new Date(), updatedAt: new Date() });
   } catch (error) {
     res.status(400).json("aldaa");
   }
