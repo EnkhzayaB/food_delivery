@@ -9,7 +9,7 @@ const Footer = () => {
       </div>
 
       <footer className="bg-[#1e1e1e] text-white px-4 md:px-20 py-10">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-2">
               <img src="/logo.svg" alt="logo" className="w-8 h-8" />
@@ -33,11 +33,11 @@ const Footer = () => {
             <h3 className="font-semibold mb-2 text-gray-400">MENU</h3>
             <ul className="space-y-1 text-sm text-gray-300">
               {[
-                "Appetizers",
                 "Salads",
                 "Pizzas",
-                "Main dishes",
                 "Desserts",
+                "Appetizers",
+                "Main dishes",
               ].map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
@@ -45,12 +45,12 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-2 invisible">invisible</h3>
+            <h3 className="font-semibold mb-2 text-gray-400">Invisible</h3>
             <ul className="space-y-1 text-sm text-gray-300">
               {[
-                "Side dish",
                 "Brunch",
                 "Desserts",
+                "Side dish",
                 "Beverages",
                 "Fish & Sea foods",
               ].map((item, i) => (

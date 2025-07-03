@@ -45,7 +45,7 @@ export default function registerPage() {
 
         <button
           className="w-full bg-[#18181B] text-white p-3 rounded-md font-medium hover:bg-gray-300 hover:text-black"
-          onClick={() => (step < 3 ? setStep(step + 1) : "")}
+          onClick={() => (step < 2 ? setStep(step + 1) : "")}
         >
           Let's Go
         </button>
