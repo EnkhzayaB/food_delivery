@@ -5,7 +5,12 @@ type FoodCardProps = {
   description: string;
 };
 
-const FoodCards = ({ title, price, image, description }: FoodCardProps) => {
+export const FoodCards = ({
+  title,
+  price,
+  image,
+  description,
+}: FoodCardProps) => {
   return (
     <div className="bg-white rounded-[20px] shadow-md p-1.5 hover:shadow-2xl">
       <img
@@ -19,7 +24,5 @@ const FoodCards = ({ title, price, image, description }: FoodCardProps) => {
     </div>
   );
 };
-
-export default FoodCards;
 
 // w-[200px] lg:w-[400px] xl:w-full

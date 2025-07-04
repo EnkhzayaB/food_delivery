@@ -1,9 +1,12 @@
-import Header from "@/components/Header";
-import Banner from "@/components/Banner";
-import FoodCards from "@/components/FoodCards";
-import foodList from "@/components/mock/foodList";
-import food2 from "@/components/mock/food2";
-import Footer from "@/components/Footer";
+// import { Banner, FoodCards, Footer } from "@/components";
+import {
+  Header,
+  Banner,
+  FoodCards,
+  Footer,
+  food2,
+  foodList,
+} from "@/components";
 export default function home() {
   return (
     <div>

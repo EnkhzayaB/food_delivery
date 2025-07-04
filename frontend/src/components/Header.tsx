@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-const Header = () => {
+export const Header = () => {
   return (
     <header className="bg-[#1c1c1f] text-white px-6 py-4 flex justify-between items-center">
       <div className="flex items-center gap-2">
@@ -30,5 +30,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

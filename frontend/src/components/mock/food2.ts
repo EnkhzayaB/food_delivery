@@ -1,4 +1,4 @@
-const food2 = [
+export const food2 = [
   {
     title: "Grilled Chicken",
     price: 12.99,
@@ -48,5 +48,3 @@ const food2 = [
     description: "Sweet and tangy cranberry snacks",
   },
 ];
-
-export default food2;
