@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Food } from "../models/index.js";
 
-export const getAllFoods = async (request: Request, response: Response) => {
+export const getAllFoods = async (_request: Request, response: Response) => {
   try {
     const foods = await Food.find();
     response.json({ success: true, data: foods });

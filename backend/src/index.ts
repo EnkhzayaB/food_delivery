@@ -3,10 +3,9 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import foodsRouter from "./routes/food.route.js";
 import orderRouter from "./routes/order.route.js";
-import categoryRouter from "./routes/category.route.js";
-import userRouter from "./routes/user.route.js";
-import foodOrderItemRouter from "./routes/foodOrderItems.route.js";
-
+import { categoryRouter } from "./routes/category.route.js";
+import { userRouter } from "./routes/user.route.js";
+import { foodOrderItemRouter } from "./routes/foodOrderItems.route.js";
 dotenv.config();
 
 mongoose.connect((process.env.MONGO_URL as string) || "");
