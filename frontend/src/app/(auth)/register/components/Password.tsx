@@ -1,14 +1,17 @@
 "use client";
-import Link from "next/link";
-type Props = {
-  formData: {
-    password: string | number;
-    confirmPassword: string | number;
-  };
-  setFormData: (data: any) => any;
+import { useFormContext } from "react-hook-form";
+type FormDataType = {
+  email: string;
+  password: string;
+  confirmPassword: string;
 };
 
-export default function Password({ formData, setFormData }: Props) {
+export default function Password() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<FormDataType>();
+
   return (
     <>
       <h1 className="text-2xl font-semibold">Create a strong password</h1>
@@ -20,21 +23,23 @@ export default function Password({ formData, setFormData }: Props) {
         type="password"
         placeholder="password"
         className="w-full border p-3 rounded-md outline-none focus:ring-2 hover:ring-red-300"
-        value={formData.password}
-        onChange={(e) => {
-          setFormData({ ...formData, password: e.target.value });
-        }}
+        {...register("password")}
       />
+
+      {errors.password && (
+        <p className="text-red-500 text-sm">{errors.password.message}</p>
+      )}
 
       <input
         type="password"
         placeholder="confirm password"
         className="w-full border p-3 rounded-md outline-none focus:ring-2 hover:ring-red-300"
-        value={formData.confirmPassword}
-        onChange={(e) => {
-          setFormData({ ...formData, confirmPassword: e.target.value });
-        }}
+        {...register("confirmPassword")}
       />
+
+      {errors.confirmPassword && (
+        <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+      )}
 
       <p className="text-[#71717A] text-sm font-normal flex items-center">
         <input type="checkbox" className="border-[#09090B]" />

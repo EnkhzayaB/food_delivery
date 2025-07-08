@@ -4,4 +4,4 @@ import { signIn, signUp } from "../controllers/auth.controller.js";
 export const authRouter = express.Router();
 
 // authRouter.post("/signIn", signIn);
-authRouter.post("/signUp", signUp);
+authRouter.post("/", signUp);

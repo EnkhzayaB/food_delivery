@@ -5,8 +5,26 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "zaya123";
 
+export const checkEmail = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ isAvailable: false, message: "Email is required" });
+  }
+
+  const existingUser = await User.findOne({ email });
+
+  if (existingUser) {
+    return res.json({ isAvailable: false });
+  }
+
+  return res.json({ isAvailable: true });
+};
+
 export const signUp = async (req: Request, res: Response) => {
-  const { email, password, phoneNumber, address, role } = req.body;
+  const { email, password } = req.body;
   try {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
@@ -15,9 +33,6 @@ export const signUp = async (req: Request, res: Response) => {
     const createdUser = await User.create({
       email: email,
       password: hashedPassword,
-      phoneNumber,
-      address,
-      role,
     });
     res.status(200).json({
       success: true,
