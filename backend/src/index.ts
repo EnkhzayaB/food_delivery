@@ -13,7 +13,7 @@ mongoose.connect((process.env.MONGO_URL as string) || "");
 
 const server = express();
 server.use(express.json());
-server.use(cors());
+server.use(cors({ origin: "http://localhost:3000" }));
 
 const port = process.env.PORT || "";
 

@@ -1,27 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "zaya123";
-
-export const checkEmail = async (req: Request, res: Response) => {
-  const { email } = req.body;
-
-  if (!email) {
-    return res
-      .status(400)
-      .json({ isAvailable: false, message: "Email is required" });
-  }
-
-  const existingUser = await User.findOne({ email });
-
-  if (existingUser) {
-    return res.json({ isAvailable: false });
-  }
-
-  return res.json({ isAvailable: true });
-};
 
 export const signUp = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -43,7 +25,11 @@ export const signUp = async (req: Request, res: Response) => {
   }
 };
 
-export const signIn = async (req: Request, res: Response) => {
+export const signIn = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { email, password } = req.body;
 
@@ -62,5 +48,6 @@ export const signIn = async (req: Request, res: Response) => {
     res.json({ token });
   } catch (err) {
     res.status(500).json({ message: "Login failed", err });
+    next(err);
   }
 };

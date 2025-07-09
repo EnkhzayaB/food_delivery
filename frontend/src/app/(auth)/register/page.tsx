@@ -4,9 +4,9 @@ import { useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, FormProvider } from "react-hook-form";
-import Email from "./components/Email";
-import Password from "./components/Password";
-import Success from "./components/Success";
+import Email from "../../../components/auth/Email";
+import Password from "../../../components/auth/Password";
+import Success from "../../../components/auth/Success";
 
 const registerSchema = yup.object({
   email: yup
@@ -52,7 +52,7 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: FormDataType) => {
     try {
-      const res = await fetch("http://localhost:8000/auth", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
