@@ -3,7 +3,7 @@ import { Food } from "../models/index.js";
 
 export const getAllFoods = async (_request: Request, response: Response) => {
   try {
-    const foods = await Food.find();
+    const foods = await Food.find().populate("category");
     response.json({ success: true, data: foods });
   } catch (error) {
     response.status(303).json({ success: false, error: error });
@@ -13,7 +13,7 @@ export const getAllFoods = async (_request: Request, response: Response) => {
 export const getFoodByid = async (request: Request, response: Response) => {
   try {
     const { foodId } = request.params;
-    const food = await Food.findById(foodId);
+    const food = await Food.findById(foodId).populate("category");
 
     response.status(202).json({ success: true, data: food });
   } catch (error) {
@@ -23,11 +23,13 @@ export const getFoodByid = async (request: Request, response: Response) => {
 
 export const createFood = async (request: Request, response: Response) => {
   try {
-    const food = request.body;
+    const { foodName, price, image, ingredients, category } = request.body;
     const createFood = await Food.create({
-      ...food,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      foodName,
+      price,
+      image,
+      ingredients,
+      category,
     });
 
     response.json({ success: true, data: createFood });
@@ -53,17 +55,30 @@ export const updateFood = async (request: Request, response: Response) => {
 export const deleteFood = async (request: Request, response: Response) => {
   try {
     const { foodId } = request.params;
-    const deleteFood = request.body;
+    const deleteFood = await Food.findByIdAndDelete(foodId);
+    if (!deleteFood) {
+      console.error("Error finding food");
+      response
+        .status(404)
+        .json({ success: false, error: "Failed to find food" });
+    }
 
-    const food = await Food.findByIdAndDelete(foodId, deleteFood);
-    response.status(202).json({ success: true, data: food });
+    response.json({
+      success: true,
+      deletedData: deleteFood,
+    });
   } catch (error) {
-    response.status(202).json({ success: true, error: error });
+    console.error("Error deleting food:", error);
+    response
+      .status(400)
+      .json({ success: false, error: "Failed to delete food" });
   }
 };
 
 // {
-// "foodname":"bansh",
-// "price":9999,
-// "image": "google.com",
-// "ingredients":"guril, mah, nogoo"}
+//   "foodName": "Dill Salad ",
+//   "price": 13000,
+//   "image": "https://res.cloudinary.com/dvop0mkqf/image/upload/v1752446844/yiqtn0vm0fr5w9iwlkth.jpg",
+//   "ingredients": "lettuce, bacon, egg, chicken, cheese",
+//   "category": "68741b87132d4b669a284836"
+// }

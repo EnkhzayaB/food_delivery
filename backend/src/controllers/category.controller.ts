@@ -3,7 +3,7 @@ import { Category } from "../models/index.js";
 
 export const getCategory = async (req: Request, res: Response) => {
   try {
-    const category = await Category.find().populate("food");
+    const category = await Category.find();
     res.json({ success: true, data: category });
   } catch (error) {
     res.status(303).json({ success: false, error: error });
@@ -13,11 +13,7 @@ export const getCategory = async (req: Request, res: Response) => {
 export const createCategory = async (req: Request, res: Response) => {
   try {
     const category = req.body;
-    const createCategory = await Category.create({
-      ...category,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    const createCategory = await Category.create(category);
 
     res.json({ success: true, data: createCategory });
   } catch (error) {

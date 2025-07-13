@@ -89,7 +89,7 @@ const LoginPage = () => {
 
         <Link href={"/register"}>
           <p className="text-sm text-gray-600 ">
-            If you do not have an account?
+            Don’t have an account?
             <span className="text-blue-600 cursor-pointer">
               {" "}
               &nbsp; Sign-up{" "}

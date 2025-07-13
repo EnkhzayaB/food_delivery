@@ -1,6 +1,6 @@
 export const foodList = [
   {
-    title: "Grilled Chicken",
+    foodName: "Grilled Chicken",
     price: 12.99,
     image: "/food.png",
     description: "Juicy grilled chicken with herbs",

@@ -1,11 +1,11 @@
 import { model, Schema, Types } from "mongoose";
 
 const food = new Schema({
-  foodname: String,
+  foodName: String,
   price: Number,
   image: String,
   ingredients: [String],
-  // category: { type: Types.ObjectId, ref: "Category", required: true },
+  category: { type: Types.ObjectId, ref: "Category", required: true },
   createdAt: Date,
   updatedAt: Date,
 });
