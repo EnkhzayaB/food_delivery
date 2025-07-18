@@ -19,13 +19,13 @@ export default function home() {
         <Footer />
       </footer>
 
-      <CldUploadButton
+      {/* <CldUploadButton
         className="border border-yellow-300"
         uploadPreset="food_delivery"
         onSuccess={(results) => {
           console.log(results);
         }}
-      />
+      /> */}
 
       {/* <div className="flex justify-center">
         <CldImage
