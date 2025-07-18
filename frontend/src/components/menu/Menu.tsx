@@ -48,8 +48,9 @@ export const Menu = () => {
                 foods
                   .filter(
                     (food) =>
-                      food.category.categoryName === category.categoryName
+                      food.category?.categoryName === category.categoryName
                   )
+                  .slice(0, 7)
                   .map((food, index) => {
                     return <FoodCards food={food} key={index}></FoodCards>;
                   })}

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Category } from "../models/index.js";
+import { Food } from "../models/index.js";
 
 export const getCategory = async (req: Request, res: Response) => {
   try {

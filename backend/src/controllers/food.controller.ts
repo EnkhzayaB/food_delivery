@@ -10,6 +10,23 @@ export const getAllFoods = async (_request: Request, response: Response) => {
   }
 };
 
+export const getCategoryPage = async (req: Request, res: Response) => {
+  try {
+    const { categoryName } = req.params;
+
+    const foods = await Food.find().populate({
+      path: "category",
+      match: { categoryName: categoryName },
+    });
+
+    const filteredFoods = foods.filter((food) => food.category !== null);
+
+    res.json({ success: true, data: filteredFoods });
+  } catch (error) {
+    res.status(402).json({ success: true, error: error });
+  }
+};
+
 export const getFoodByid = async (request: Request, response: Response) => {
   try {
     const { foodId } = request.params;
