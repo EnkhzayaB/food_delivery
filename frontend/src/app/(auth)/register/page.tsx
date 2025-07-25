@@ -134,7 +134,7 @@ export default function RegisterPage() {
 
         <div className="hidden md:block">
           <img
-            src="/auth.jpg"
+            src="/food-delivery3.jpg"
             alt="Delivery rider"
             className="w-full h-screen object-cover"
           />

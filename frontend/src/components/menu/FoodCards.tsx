@@ -17,41 +17,29 @@ export const FoodCards = ({ food }: { food: Food }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="bg-white rounded-[20px] shadow-md p-1.5 hover:shadow-2xl">
+        <div className="bg-white rounded-[20px] shadow-md hover:shadow-2xl">
           <img
             src={food.image}
             alt={food.foodName}
-            className="rounded-[20px] w-full h-64 object-cover"
+            className="rounded-t-[20px] w-full h-50 sm:h-64 object-cover"
           />
-          <h3 className="text-md font-semibold mt-2 text-[#EF4444]">
-            {food.foodName}
-          </h3>
-          <p className="text-sm text-gray-600">{food.ingredients}</p>
-          <p className="text-sm font-bold mt-1">${food.price}</p>
+          <div className="px-2">
+            <h3 className="text-base md:text-2xl font-semibold mt-2 text-[#EF4444]">
+              {food.foodName}
+            </h3>
+            <p className="text-sm text-gray-600">{food.ingredients}</p>
+            <p className="text-sm font-bold mt-1">${food.price}</p>
+          </div>
         </div>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[555px]">
-        {/* <DialogHeader>
-          <img
-            src={food.image}
-            alt={food.foodName}
-            className="rounded-[20px] w-full h-64 object-cover"
-          />
-          <DialogTitle>
-            <h1>{food.foodName}</h1>
-          </DialogTitle>
-          <DialogDescription>
-            <p>{food.ingredients}</p>
-            <p className="text-sm font-bold mt-1">${food.price}</p>
-          </DialogDescription>
-        </DialogHeader> */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <img
               src={food.image}
               alt={food.foodName}
-              className="rounded-[20px] w-full h-64 object-cover"
+              className="rounded w-full h-64 object-cover"
             />
           </div>
           <div>

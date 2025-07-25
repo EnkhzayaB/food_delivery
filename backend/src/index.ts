@@ -7,6 +7,7 @@ import orderRouter from "./routes/order.route.js";
 import { categoryRouter } from "./routes/category.route.js";
 import { foodOrderItemRouter } from "./routes/foodOrderItems.route.js";
 import { authRouter } from "./routes/auth.route.js";
+import { userRouter } from "./routes/user.route.js";
 dotenv.config();
 
 mongoose.connect((process.env.MONGO_URL as string) || "");
@@ -21,7 +22,7 @@ server.use("/food", foodsRouter);
 server.use("/order", orderRouter);
 server.use("/category", categoryRouter);
 server.use("/items", foodOrderItemRouter);
-server.use("/auth", authRouter);
+server.use("/auth", authRouter, userRouter);
 
 server.get("/", (_request, response) => {
   response.send("Hello zaya");

@@ -53,17 +53,17 @@ export const Menu = () => {
       {category.map((category, index) => {
         return (
           <div key={index}>
-            <h2 className="font-semibold text-3xl mt-10 mb-4">
+            <h2 className="font-semibold text-3xl mt-10 mb-4 mx-6 md:mx-25 2xl:mx-26">
               {category.categoryName}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 mx-6 md:mx-25 2xl:mx-26">
               {foods &&
                 foods
                   .filter(
                     (food) =>
                       food.category?.categoryName === category.categoryName
                   )
-                  .slice(0, 7)
+                  .slice(0, 8)
                   .map((food, index) => {
                     return <FoodCards food={food} key={index}></FoodCards>;
                   })}

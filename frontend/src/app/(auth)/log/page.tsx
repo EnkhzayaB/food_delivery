@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, FormProvider } from "react-hook-form";
+import { useAuth } from "@/context/authContext";
 
 const logInSchema = yup.object({
   email: yup
@@ -19,6 +20,7 @@ const logInSchema = yup.object({
 type LogInFormData = yup.InferType<typeof logInSchema>;
 
 const LoginPage = () => {
+  const { login } = useAuth();
   const router = useRouter();
   const {
     register,
@@ -40,11 +42,13 @@ const LoginPage = () => {
         body: JSON.stringify(data),
       });
       const result = await res.json();
-      console.log("result", result);
+      console.log("user", data); // Form өгөгдөл (email, password)
+      console.log("result", result); // Backend-аас ирж буй JSON
       console.log("BACKEND_URL", process.env.NEXT_PUBLIC_BACKEND_URL);
 
-      if (res.ok) {
-        router.push("/");
+      if (res.ok && result.token) {
+        login(result.token);
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Error during signup", error);
@@ -100,7 +104,7 @@ const LoginPage = () => {
 
       <div className="hidden md:block">
         <img
-          src="/auth.jpg"
+          src="/food-delivery3.jpg"
           alt="Delivery rider"
           className="w-full h-screen object-cover"
         />
