@@ -1,10 +1,41 @@
 "use client";
+import { useState } from "react";
+import { Food } from "@/types";
+import { useCart } from "@/context/CartContext";
 import Link from "next/link";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/context/AuthContext";
 import { ShoppingCart, User } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-export const Header = () => {
+export const Header = ({ food }: { food: Food }) => {
   const { isLoggedIn, email, logout } = useAuth();
+  const [tab, setTab] = useState<"cart" | "order">("cart");
+
+  const { cart, addToCart, removeFromCart, clearCart } = useCart();
+
+  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = total > 0 ? 0.99 : 0;
+
+  const increase = (item: any) => {
+    addToCart({ ...item, quantity: 1 });
+  };
+
+  const decrease = (item: any) => {
+    if (item.quantity === 1) {
+      removeFromCart(item.id);
+    } else {
+      addToCart({ ...item, quantity: -1 });
+    }
+  };
 
   return (
     <header className="bg-black text-white px-6 py-4 flex justify-between items-center">
@@ -19,7 +50,144 @@ export const Header = () => {
       </div>
 
       <div className="flex gap-2 items-center md:gap-4">
-        <ShoppingCart className="w-[24px] h-[24px] md:w-[32px] md:h-[32px]" />
+        <Sheet>
+          <SheetTrigger>
+            <div className="relative">
+              <div className="w-10 h-8 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-105 transition">
+                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+              </div>
+
+              {totalCount > 0 && (
+                <div className="absolute top-0 right-0 -mt-1 -mr-1 sm:-mt-2 sm:-mr-2 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
+                  {totalCount}
+                </div>
+              )}
+            </div>
+          </SheetTrigger>
+          <SheetContent className="w-[200px] sm:w-[540px]">
+            <SheetHeader>
+              <SheetTitle>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold flex gap-2.5">
+                    {" "}
+                    <ShoppingCart />
+                    Order detail
+                  </h2>
+                </div>
+              </SheetTitle>
+              <SheetDescription>
+                {" "}
+                <div className="flex justify-between mb-4 bg-gray-100 rounded-full p-1">
+                  <button
+                    onClick={() => setTab("cart")}
+                    className={`flex-1 py-2 rounded-full font-medium ${
+                      tab === "cart" ? "bg-red-500 text-white" : "text-gray-700"
+                    }`}
+                  >
+                    Cart
+                  </button>
+                  <button
+                    onClick={() => setTab("order")}
+                    className={`flex-1 py-2 rounded-full font-medium ${
+                      tab === "order"
+                        ? "bg-red-500 text-white"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    Order
+                  </button>
+                </div>
+              </SheetDescription>
+              <div className="w-full max-w-md mx-auto p-4 rounded-lg shadow-md md:max-w-lg">
+                {tab === "cart" ? (
+                  <>
+                    <h3 className="text-lg font-semibold mb-2">My cart</h3>
+                    {cart.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between mb-4 border-b pb-3"
+                      >
+                        <img
+                          src={item.image}
+                          className="w-16 h-16 rounded object-cover"
+                        />
+                        <div className="flex-1 px-3">
+                          <h4 className="text-sm font-bold text-red-600">
+                            {item.foodName}
+                          </h4>
+                          <p className="text-xs text-gray-600">
+                            {item.price.toFixed(2)}
+                          </p>
+                          <div className="flex items-center mt-1 gap-2">
+                            <button
+                              onClick={() => decrease(item)}
+                              className="w-6 h-6 rounded-full border flex items-center justify-center"
+                            >
+                              -
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button
+                              onClick={() => increase(item)}
+                              className="w-6 h-6 rounded-full border flex items-center justify-center"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-red-500 font-bold text-xl"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <div className="mb-4">
+                      <label className="text-sm font-medium">
+                        Delivery location
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Please share your complete address"
+                        className="w-full border px-3 py-2 rounded mt-1"
+                      />
+                    </div>
+
+                    <p className="text-[20px] font-semibold text-[#71717A]">
+                      Payment info
+                    </p>
+                    <div className="text-sm">
+                      <div className="flex justify-between">
+                        <span>Items</span>
+                        <span>${total.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Shipping</span>
+                        <span>${shipping.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between font-bold mt-2 border-t pt-2">
+                        <span>Total</span>
+                        <span>${(total + shipping).toFixed(2)}</span>
+                      </div>
+                      <button className="w-full bg-red-500 text-white font-semibold py-2 rounded mt-4 hover:bg-red-600">
+                        Checkout
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-lg font-semibold mb-2">My orders</h3>
+                    <p className="text-gray-500 text-sm">
+                      No orders placed yet.
+                    </p>
+                    {/* or you can map orders here */}
+                  </>
+                )}
+              </div>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+
         {isLoggedIn ? (
           <div className="relative group">
             <button className="bg-red-500 p-2 rounded-full">

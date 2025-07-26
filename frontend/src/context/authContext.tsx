@@ -35,14 +35,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const login = (token: string) => {
-    const userData = decodeToken(token);
-
-    if (userData?.email) {
-      localStorage.setItem("token", token);
-      setEmail(userData.email);
-      setIsLoggedIn(true);
-    }
+  const login = (user: UserType, token: string) => {
+    setIsLoggedIn(true);
+    setEmail(user.email);
+    setUserId(user._id); // хэрвээ хэрэглэж байгаа бол
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
   const logout = () => {

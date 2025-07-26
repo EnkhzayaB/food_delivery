@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, FormProvider } from "react-hook-form";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/context/AuthContext";
 
 const logInSchema = yup.object({
   email: yup
@@ -41,17 +41,19 @@ const LoginPage = () => {
         },
         body: JSON.stringify(data),
       });
-      const result = await res.json();
-      console.log("user", data); // Form өгөгдөл (email, password)
-      console.log("result", result); // Backend-аас ирж буй JSON
-      console.log("BACKEND_URL", process.env.NEXT_PUBLIC_BACKEND_URL);
 
-      if (res.ok && result.token) {
-        login(result.token);
+      const result = await res.json();
+      console.log("result", result);
+
+      if (res.ok && result.token && result.user) {
+        login(result.user, result.token); // ← user болон token-г context-д хадгална
         window.location.href = "/";
+      } else {
+        alert("Login failed. Check your credentials.");
       }
     } catch (error) {
-      console.error("Error during signup", error);
+      console.error("❌ Login error", error);
+      alert("Server error. Try again.");
     }
   };
 

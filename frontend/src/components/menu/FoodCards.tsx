@@ -1,4 +1,7 @@
+"use client";
+import { useState } from "react";
 import { Food } from "@/types";
+import { useCart } from "@/context/CartContext";
 import {
   Dialog,
   DialogTrigger,
@@ -14,9 +17,12 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 export const FoodCards = ({ food }: { food: Food }) => {
+  const [quantity, setQuantity] = useState(0);
+  const { addToCart } = useCart();
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
         <div className="bg-white rounded-[20px] shadow-md hover:shadow-2xl">
           <img
             src={food.image}
@@ -33,27 +39,76 @@ export const FoodCards = ({ food }: { food: Food }) => {
         </div>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[555px]">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <img
-              src={food.image}
-              alt={food.foodName}
-              className="rounded w-full h-64 object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="text-md font-semibold mt-2 text-[#EF4444]">
-              {food.foodName}
-            </h1>
-            <p className="text-sm text-gray-600">{food.ingredients}</p>
+      <DialogContent>
+        <DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <img
+                src={food.image}
+                alt={food.foodName}
+                className="rounded w-full h-64 object-cover"
+              />
+            </div>
+            <div className="flex justify-evenly flex-col">
+              <div>
+                <DialogTitle>
+                  <h1 className="text-md font-semibold mt-2 text-[#EF4444]">
+                    {food.foodName}
+                  </h1>
+                </DialogTitle>
+                <DialogDescription>
+                  {" "}
+                  <p className="text-sm text-gray-600">{food.ingredients}</p>
+                </DialogDescription>
+              </div>
+              <div className="flex gap-8 items-center">
+                <div className="flex flex-col">
+                  <p className="text-lg font-normal">Total price</p>
+                  <p className="text-sm font-bold mt-1">${food.price}</p>
+                </div>
+                <div className="flex gap-2.5 items-center">
+                  <Button
+                    className="bg-gray-100 text-black border-gray-600 rounded-full hover:bg-black hover:text-white"
+                    onClick={() => {
+                      if (quantity > 0) {
+                        setQuantity(quantity - 1);
+                      }
+                    }}
+                  >
+                    -
+                  </Button>
+                  <p>{quantity}</p>
+                  <Button
+                    className="bg-gray-100 text-black border-gray-600 rounded-full hover:bg-black hover:text-white"
+                    onClick={() => {
+                      setQuantity(quantity + 1);
+                    }}
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    setOpen(false);
+                    if (quantity === 0) return;
 
-            <div className="">
-              <p className="text-lg font-normal">Total price</p>
-              <p className="text-sm font-bold mt-1">${food.price}</p>
+                    addToCart({
+                      id: food._id,
+                      foodName: food.foodName,
+                      price: food.price,
+                      image: food.image,
+                      quantity,
+                    });
+                  }}
+                >
+                  Add to cart
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </DialogHeader>
       </DialogContent>
     </Dialog>
   );
