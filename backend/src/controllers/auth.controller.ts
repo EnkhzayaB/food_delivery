@@ -45,7 +45,11 @@ export const signIn = async (
       expiresIn: "1d",
     });
 
-    res.json({ token });
+    res.json({
+      success: true,
+      token,
+      data: { email: user.email },
+    });
   } catch (err) {
     res.status(500).json({ message: "Login failed", err });
     next(err);

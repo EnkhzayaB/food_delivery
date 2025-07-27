@@ -6,7 +6,7 @@ import { Menu } from "@/components/menu/Menu";
 export default function home() {
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <Banner />
 
       <main className="p-4 bg-gray-100 px-10">

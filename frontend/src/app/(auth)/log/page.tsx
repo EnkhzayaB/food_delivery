@@ -21,6 +21,7 @@ type LogInFormData = yup.InferType<typeof logInSchema>;
 
 const LoginPage = () => {
   const { login } = useAuth();
+
   const router = useRouter();
   const {
     register,
@@ -43,11 +44,11 @@ const LoginPage = () => {
       });
 
       const result = await res.json();
-      console.log("result", result);
+      console.log("login", result);
 
-      if (res.ok && result.token && result.user) {
-        login(result.user, result.token); // ← user болон token-г context-д хадгална
-        window.location.href = "/";
+      if (result.success) {
+        login(result.token, result.data.email); // ✨ Контекст дотор хадгалах
+        router.push("/"); // Нүүр хуудас руу шилжих
       } else {
         alert("Login failed. Check your credentials.");
       }

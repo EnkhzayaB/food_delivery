@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 type CartItem = {
   id: string;
   foodName: string;
@@ -18,15 +19,28 @@ const CartContext = createContext<CartContextType | null>(null);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const { email } = useAuth();
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCart(savedCart);
-  }, []);
+    if (email) {
+      const savedCart = localStorage.getItem(`cart-${email}`);
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      } else {
+        setCart([]); // no cart yet for this user
+      }
+    }
+  }, [email]);
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    if (email) {
+      localStorage.setItem(`cart-${email}`, JSON.stringify(cart));
+    }
+  }, [cart, email]);
+
+  // useEffect(() => {
+  //   localStorage.setItem("cart", JSON.stringify(cart));
+  // }, [cart]);
 
   const addToCart = (item: CartItem) => {
     const existingIndex = cart.findIndex((i) => i.id === item.id);

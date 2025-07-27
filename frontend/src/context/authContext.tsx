@@ -1,69 +1,55 @@
 "use client";
-import {
-  Children,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useState, useEffect, useContext } from "react";
+import { useCart } from "@/context/CartContext";
 
-interface AuthContextType {
+type AuthContextType = {
+  email: string | null;
   isLoggedIn: boolean;
-  email: string;
-  login: (token: string) => void;
+  login: (token: string, email: string) => void;
   logout: () => void;
-}
-const AuthContext = createContext<AuthContextType>({
-  isLoggedIn: false,
-  email: "",
-  login: () => {},
-  logout: () => {},
-});
+};
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [email, setEmail] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      const userData = decodeToken(token);
-      if (userData?.email) {
-        setIsLoggedIn(true);
-        setEmail(userData.email);
-      }
+    const email = localStorage.getItem("email");
+    if (token && email) {
+      setIsLoggedIn(true);
+      setEmail(email);
     }
   }, []);
 
-  const login = (user: UserType, token: string) => {
-    setIsLoggedIn(true);
-    setEmail(user.email);
-    setUserId(user._id); // хэрвээ хэрэглэж байгаа бол
+  const login = (token: string, email: string) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("email", email);
+    setIsLoggedIn(true);
+    setEmail(email);
   };
 
-  const logout = () => {
+  const logout = (clearCart?: () => void) => {
     localStorage.removeItem("token");
-    setEmail("");
+    localStorage.removeItem("email");
     setIsLoggedIn(false);
+    setEmail(null);
+    if (clearCart) clearCart(); // ⬅️ хэрвээ өгвөл дуудах
   };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, email, login, logout }}>
+    <AuthContext.Provider value={{ email, isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
-
-function decodeToken(token: string) {
-  try {
-    const payload = token.split(".")[1];
-    const decoded = JSON.parse(atob(payload));
-
-    return decoded;
-  } catch (error) {
-    return null;
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-}
+  return context;
+};

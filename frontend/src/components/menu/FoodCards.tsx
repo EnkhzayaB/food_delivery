@@ -52,9 +52,9 @@ export const FoodCards = ({ food }: { food: Food }) => {
             <div className="flex justify-evenly flex-col">
               <div>
                 <DialogTitle>
-                  <h1 className="text-md font-semibold mt-2 text-[#EF4444]">
+                  <p className="text-md font-semibold mt-2 text-[#EF4444]">
                     {food.foodName}
-                  </h1>
+                  </p>
                 </DialogTitle>
                 <DialogDescription>
                   {" "}

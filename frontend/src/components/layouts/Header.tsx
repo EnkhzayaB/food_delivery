@@ -13,6 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import type { AuthContextType } from "@/types/index";
 
 export const Header = ({ food }: { food: Food }) => {
   const { isLoggedIn, email, logout } = useAuth();
@@ -196,7 +197,9 @@ export const Header = ({ food }: { food: Food }) => {
             <div className="absolute hidden group-hover:block bg-white text-black p-4 shadow rounded top-full right-0">
               <p>{email}</p>
               <button
-                onClick={logout}
+                onClick={() => {
+                  logout(clearCart); // ⬅️ энд өгч байна
+                }}
                 className="mt-2 bg-gray-200 px-2 py-1 rounded"
               >
                 Sign out
