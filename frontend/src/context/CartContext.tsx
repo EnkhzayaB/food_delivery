@@ -27,7 +27,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (savedCart) {
         setCart(JSON.parse(savedCart));
       } else {
-        setCart([]); // no cart yet for this user
+        setCart([]);
       }
     }
   }, [email]);
@@ -70,6 +70,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 };
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCart must be used within CartProvider");
+  if (!context) throw new Error("useCart CartProvidertai bh heregtei");
   return context;
 };

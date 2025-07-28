@@ -12,8 +12,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "../ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Button } from "@/components/ui/button";
 
 export const FoodCards = ({ food }: { food: Food }) => {

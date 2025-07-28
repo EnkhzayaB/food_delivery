@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { Food } from "@/types";
-import { useCart } from "@/context/CartContext";
 import Link from "next/link";
+import { Food } from "@/types";
+import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { ShoppingCart, User } from "lucide-react";
 import {
@@ -13,24 +13,36 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { AuthContextType } from "@/types/index";
 
-export const Header = ({ food }: { food: Food }) => {
+type CartItem = {
+  id: string;
+  foodName: string;
+  image: string;
+  price: number;
+  quantity: number;
+};
+
+export const Header = () => {
   const { isLoggedIn, email, logout } = useAuth();
   const [tab, setTab] = useState<"cart" | "order">("cart");
 
   const { cart, addToCart, removeFromCart, clearCart } = useCart();
 
-  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0); // hoolnii niit too
+  // reduce() buh elementuudiig neg utgand oruuldg.  sum n 0 s ehlen
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0); // hoolnii niit une
+  {
+    /* toFixed n toog taslalaas hoish 2 oron awd string bolgd butsaadg. */
+  }
+
   const shipping = total > 0 ? 0.99 : 0;
 
-  const increase = (item: any) => {
+  const increase = (item: CartItem) => {
     addToCart({ ...item, quantity: 1 });
   };
 
-  const decrease = (item: any) => {
+  const decrease = (item: CartItem) => {
     if (item.quantity === 1) {
       removeFromCart(item.id);
     } else {
@@ -118,6 +130,7 @@ export const Header = ({ food }: { food: Food }) => {
                           </h4>
                           <p className="text-xs text-gray-600">
                             {item.price.toFixed(2)}
+                            {/* toFixed n toog taslalaas hoish 2 oron awd string bolgd butsaadg. */}
                           </p>
                           <div className="flex items-center mt-1 gap-2">
                             <button
@@ -181,7 +194,6 @@ export const Header = ({ food }: { food: Food }) => {
                     <p className="text-gray-500 text-sm">
                       No orders placed yet.
                     </p>
-                    {/* or you can map orders here */}
                   </>
                 )}
               </div>
@@ -198,7 +210,7 @@ export const Header = ({ food }: { food: Food }) => {
               <p>{email}</p>
               <button
                 onClick={() => {
-                  logout(clearCart); // ⬅️ энд өгч байна
+                  logout(clearCart);
                 }}
                 className="mt-2 bg-gray-200 px-2 py-1 rounded"
               >

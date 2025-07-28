@@ -47,13 +47,13 @@ const LoginPage = () => {
       console.log("login", result);
 
       if (result.success) {
-        login(result.token, result.data.email); // ✨ Контекст дотор хадгалах
-        router.push("/"); // Нүүр хуудас руу шилжих
+        login(result.token, result.data.email);
+        router.push("/");
       } else {
-        alert("Login failed. Check your credentials.");
+        alert("Login failed.");
       }
     } catch (error) {
-      console.error("❌ Login error", error);
+      console.error("Login error", error);
       alert("Server error. Try again.");
     }
   };

@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("email");
     setIsLoggedIn(false);
     setEmail(null);
-    if (clearCart) clearCart(); // ⬅️ хэрвээ өгвөл дуудах
+    if (clearCart) clearCart();
   };
 
   return (
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useAuth AuthProvidertai bh heregtei");
   }
   return context;
 };
