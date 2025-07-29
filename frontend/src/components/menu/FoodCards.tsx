@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Food } from "@/types";
 import { useCart } from "@/context/CartContext";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogTrigger,
@@ -13,8 +14,6 @@ import {
   DialogClose,
 } from "../ui/dialog";
 
-import { Button } from "@/components/ui/button";
-
 export const FoodCards = ({ food }: { food: Food }) => {
   const [quantity, setQuantity] = useState(0);
   const { addToCart } = useCart();
@@ -24,7 +23,7 @@ export const FoodCards = ({ food }: { food: Food }) => {
       <DialogTrigger asChild onClick={() => setOpen(true)}>
         <div className="bg-white rounded-[20px] shadow-md hover:shadow-2xl">
           <img
-            src={food.image}
+            src={food?.image}
             alt={food.foodName}
             className="rounded-t-[20px] w-full h-50 sm:h-64 object-cover"
           />
@@ -55,9 +54,9 @@ export const FoodCards = ({ food }: { food: Food }) => {
                     {food.foodName}
                   </p>
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="text-sm text-gray-600">
                   {" "}
-                  <p className="text-sm text-gray-600">{food.ingredients}</p>
+                  {food.ingredients}
                 </DialogDescription>
               </div>
               <div className="flex gap-8 items-center">
@@ -112,5 +111,3 @@ export const FoodCards = ({ food }: { food: Food }) => {
     </Dialog>
   );
 };
-
-// w-[200px] lg:w-[400px] xl:w-full

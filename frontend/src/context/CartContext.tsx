@@ -43,11 +43,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   // }, [cart]);
 
   const addToCart = (item: CartItem) => {
-    const existingIndex = cart.findIndex((i) => i.id === item.id);
-    if (existingIndex !== -1) {
+    const currentIndex = cart.findIndex((i) => i.id === item.id);
+    if (currentIndex !== -1) {
       const updated = [...cart];
-      updated[existingIndex].quantity += item.quantity;
+      updated[currentIndex].quantity += item.quantity;
       setCart(updated);
+      // alert("Food is being added to the cart!");
     } else {
       setCart([...cart, item]);
     }

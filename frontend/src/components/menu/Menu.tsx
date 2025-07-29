@@ -67,14 +67,14 @@ export const Menu = () => {
                   .map((food, index) => {
                     return <FoodCards food={food} key={index}></FoodCards>;
                   })}
-              {/* <Link href={"/category"}> */}
-              <div className="bg-gray-100 rounded-[20px] shadow-md p-1.5 hover:shadow-2xl flex justify-center items-center hover:bg-gray-200">
-                <p className="text-md font-semibold mt-2 text-[#EF4444]">
-                  {" "}
-                  See more
-                </p>
-              </div>
-              {/* </Link> */}
+              <Link href={`/${category.categoryName}`}>
+                <div className="bg-gray-100 rounded-[20px] shadow-md p-1.5 hover:shadow-2xl flex justify-center items-center hover:bg-gray-200">
+                  <p className="text-md font-semibold mt-2 text-[#EF4444]">
+                    {" "}
+                    See more
+                  </p>
+                </div>
+              </Link>
             </div>
           </div>
         );
