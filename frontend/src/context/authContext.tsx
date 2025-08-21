@@ -1,6 +1,5 @@
 "use client";
 import { createContext, useState, useEffect, useContext } from "react";
-import { useCart } from "@/context/CartContext";
 
 type AuthContextType = {
   email: string | null;
@@ -31,12 +30,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setEmail(email);
   };
 
-  const logout = (clearCart?: () => void) => {
+  const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
     setIsLoggedIn(false);
     setEmail(null);
-    if (clearCart) clearCart();
   };
 
   return (

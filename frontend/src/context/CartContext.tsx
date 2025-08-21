@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+
 type CartItem = {
   id: string;
   foodName: string;
@@ -8,6 +9,7 @@ type CartItem = {
   image: string;
   quantity: number;
 };
+
 type CartContextType = {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
@@ -29,6 +31,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setCart([]);
       }
+    } else {
+      // Clear cart when user logs out (email becomes null)
+      setCart([]);
     }
   }, [email]);
 
@@ -38,21 +43,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [cart, email]);
 
-  // useEffect(() => {
-  //   localStorage.setItem("cart", JSON.stringify(cart));
-  // }, [cart]);
-
   const addToCart = (item: CartItem) => {
     const currentIndex = cart.findIndex((i) => i.id === item.id);
     if (currentIndex !== -1) {
       const updated = [...cart];
       updated[currentIndex].quantity += item.quantity;
       setCart(updated);
-      // alert("Food is being added to the cart!");
     } else {
       setCart([...cart, item]);
     }
   };
+
   const removeFromCart = (id: string) => {
     setCart(cart.filter((item) => item.id !== id));
   };
@@ -69,6 +70,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     </CartContext.Provider>
   );
 };
+
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) throw new Error("useCart CartProvidertai bh heregtei");

@@ -1,10 +1,12 @@
 "use client";
+import { useState, useEffect } from "react";
+import { ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
-import { Food } from "@/types";
-import { useState } from "react";
-import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { ShoppingCart, User, MapPinHouse } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { CustomAlertDialog } from "@/components/dialogs/CustomAlertDialog";
+import { CartTab } from "./CartTab";
+import { OrderTab } from "./OrderTab";
 import {
   Sheet,
   SheetContent,
@@ -14,58 +16,68 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-type CartItem = {
-  id: string;
-  foodName: string;
-  image: string;
-  price: number;
-  quantity: number;
-};
-
 export const Header = () => {
   const { isLoggedIn, email, logout } = useAuth();
+  const { cart, clearCart } = useCart();
   const [tab, setTab] = useState<"cart" | "order">("cart");
-  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { cart, addToCart, removeFromCart, clearCart } = useCart();
+  // Alert dialog states
+  const [alertDialog, setAlertDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    type: "success" | "error" | "warning";
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    type: "success",
+  });
 
-  // total price and quantity start//
-  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0); // hoolnii niit too
-  // reduce() buh elementuudiig neg utgand oruuldg.  sum n 0 s ehlen
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0); // hoolnii niit une
-  {
-    /* toFixed n toog taslalaas hoish 2 oron awd string bolgd butsaadg. */
-  }
-  const shipping = total > 0 ? 0.99 : 0;
-  //total price and quantity end//
-
-  const increase = (item: CartItem) => {
-    addToCart({ ...item, quantity: 1 });
+  const showAlert = (
+    title: string,
+    description: string,
+    type: "success" | "error" | "warning" = "success"
+  ) => {
+    setAlertDialog({
+      isOpen: true,
+      title,
+      description,
+      type,
+    });
   };
 
-  const decrease = (item: CartItem) => {
-    if (item.quantity === 1) {
-      removeFromCart(item.id);
-    } else {
-      addToCart({ ...item, quantity: -1 });
-    }
+  const closeAlert = () => {
+    setAlertDialog({ ...alertDialog, isOpen: false });
   };
 
-  const checkout = async () => {
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+
+  const checkout = async (deliveryAddress: string) => {
     if (!isLoggedIn) {
-      alert("Та захиалга өгөхийн тулд нэвтэрнэ үү!");
+      showAlert(
+        "Login Required",
+        "Та захиалга өгөхийн тулд нэвтэрнэ үү!",
+        "warning"
+      );
       return;
     }
+
     if (cart.length === 0) {
-      alert("Сагс хоосон байна!");
+      showAlert("Empty Cart", "Сагс хоосон байна!", "warning");
       return;
     }
+
     if (!deliveryAddress.trim()) {
-      alert("Хүргэлтийн хаягаа бичнэ үү!");
+      showAlert(
+        "Delivery Address Required",
+        "Хүргэлтийн хаягаа бичнэ үү!",
+        "warning"
+      );
       return;
     }
+
     setIsLoading(true);
 
     try {
@@ -77,7 +89,11 @@ export const Header = () => {
           userId = payload.id;
         } catch (err) {
           console.error("token буруу байна:", err);
-          alert("Invalid token. Please login again.");
+          showAlert(
+            "Authentication Error",
+            "Invalid token. Please login again.",
+            "error"
+          );
           return;
         }
       }
@@ -88,10 +104,11 @@ export const Header = () => {
           food: item.id,
           quantity: item.quantity,
         })),
-        totalPrice: total + shipping,
+        totalPrice:
+          cart.reduce((total, item) => total + item.price * item.quantity, 0) +
+          0.99,
         deliveryAddress: deliveryAddress,
       };
-      console.log("cart items", cart);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/order`,
@@ -106,18 +123,20 @@ export const Header = () => {
       );
 
       const result = await response.json();
-      console.log("order response", result);
 
       if (response.ok && result.success) {
-        alert("Захиалга амжилттай илгээгдлээ!");
+        showAlert("Order Success", "Захиалга амжилттай илгээгдлээ!", "success");
         clearCart();
-        setDeliveryAddress("");
       } else {
-        alert("Захиалга илгээхэд алдаа гарлааД" + result.message);
+        showAlert(
+          "Order Error",
+          "Захиалга илгээхэд алдаа гарлаа: " + result.message,
+          "error"
+        );
       }
     } catch (error) {
       console.log("checkout aldaa:", error);
-      alert("zahialga hiilgehed aldaa garlaa");
+      showAlert("Order Error", "zahialga hiilgehed aldaa garlaa", "error");
     } finally {
       setIsLoading(false);
     }
@@ -125,31 +144,18 @@ export const Header = () => {
 
   return (
     <header className="bg-black text-white px-6 py-4 flex justify-between items-center">
-      <div className="flex items-center gap-2">
-        <img src="/logo.svg" alt="logo" className="w-8 h-8" />
-        <div>
-          <h1 className="font-bold text-xl">
-            Nom<span className="text-red-500">Nom</span>
-          </h1>
-          <p className="text-sm text-gray-300">Swift delivery</p>
-        </div>
+      <div className="flex items-center gap-4">
+        <Link href="/" className="text-2xl font-bold">
+          NomNom
+        </Link>
+        <span className="text-sm text-gray-300">Swift delivery</span>
       </div>
 
-      <div className="flex gap-2 items-center md:gap-4">
+      <div className="flex items-center gap-4">
         <Sheet>
-          <div className="bg-white rounded-2xl px-2 py-2 justify-between md:block xl:block hidden">
-            <div className="flex">
-              <input
-                type="text"
-                placeholder="Delivery address:"
-                className="text-black outline-none"
-              />
-              <MapPinHouse className="text-red-600" />{" "}
-            </div>
-          </div>
-          <SheetTrigger>
-            <div className="relative">
-              <div className="w-10 h-8 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-105 transition">
+          <SheetTrigger asChild>
+            <div className="relative cursor-pointer">
+              <div className="w-10 h-8 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-md transition-all duration-200">
                 <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
               </div>
 
@@ -160,132 +166,49 @@ export const Header = () => {
               )}
             </div>
           </SheetTrigger>
-          <SheetContent className="w-[200px] sm:w-[540px]">
-            <SheetHeader>
+          <SheetContent className="w-[300px] sm:w-[600px] lg:w-[700px] transition-all duration-300 ease-out">
+            <SheetHeader className="h-full flex flex-col">
               <SheetTitle>
                 <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold flex gap-2.5">
-                    {" "}
-                    <ShoppingCart />
+                  <h2 className="text-2xl font-bold flex gap-3 items-center text-gray-800">
+                    <div className="p-2 bg-red-100 rounded-full">
+                      <ShoppingCart className="w-6 h-6 text-red-600" />
+                    </div>
                     Order detail
                   </h2>
                 </div>
               </SheetTitle>
-              <SheetDescription>
-                {" "}
-                <div className="flex justify-between mb-4 bg-gray-100 rounded-full p-1">
-                  <button
-                    onClick={() => setTab("cart")}
-                    className={`flex-1 py-2 rounded-full font-medium ${
-                      tab === "cart" ? "bg-red-500 text-white" : "text-gray-700"
-                    }`}
-                  >
-                    Cart
-                  </button>
-                  <button
-                    onClick={() => setTab("order")}
-                    className={`flex-1 py-2 rounded-full font-medium ${
-                      tab === "order"
-                        ? "bg-red-500 text-white"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    Order
-                  </button>
-                </div>
-              </SheetDescription>
-              <div className="w-full max-w-md mx-auto p-4 rounded-lg shadow-md md:max-w-lg">
-                {tab === "cart" ? (
-                  <>
-                    <h3 className="text-lg font-semibold mb-2 flex-1 overflow-y-auto max-h-[60vh]">
-                      My cart
-                    </h3>
-                    {cart.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between mb-4 border-b pb-3"
-                      >
-                        <img
-                          src={item.image}
-                          className="w-16 h-16 rounded object-cover"
-                        />
-                        <div className="flex-1 px-3">
-                          <h4 className="text-sm font-bold text-red-600">
-                            {item.foodName}
-                          </h4>
-                          <p className="text-xs text-gray-600">
-                            {item.price.toFixed(2)}
-                            {/* toFixed n toog taslalaas hoish 2 oron awd string bolgd butsaadg. */}
-                          </p>
-                          <div className="flex items-center mt-1 gap-2">
-                            <button
-                              onClick={() => decrease(item)}
-                              className="w-6 h-6 rounded-full border flex items-center justify-center"
-                            >
-                              -
-                            </button>
-                            <span>{item.quantity}</span>
-                            <button
-                              onClick={() => increase(item)}
-                              className="w-6 h-6 rounded-full border flex items-center justify-center"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-red-500 font-bold text-xl"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                    <div className="mb-4">
-                      <label className="text-sm font-medium">
-                        Delivery location
-                      </label>
-                      <input
-                        type="text"
-                        value={deliveryAddress}
-                        onChange={(e) => setDeliveryAddress(e.target.value)}
-                        placeholder="Please share your complete address"
-                        className="w-full border px-3 py-2 rounded mt-1"
-                      />
-                    </div>
 
-                    <p className="text-[20px] font-semibold text-[#71717A]">
-                      Payment info
-                    </p>
-                    <div className="text-sm">
-                      <div className="flex justify-between">
-                        <span>Items</span>
-                        <span>${total.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Shipping</span>
-                        <span>${shipping.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between font-bold mt-2 border-t pt-2">
-                        <span>Total</span>
-                        <span>${(total + shipping).toFixed(2)}</span>
-                      </div>
-                      <button
-                        className="w-full bg-red-500 text-white font-semibold py-2 rounded mt-4 hover:bg-red-600"
-                        onClick={checkout}
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Уншиж банай..." : "Checkout"}
-                      </button>
-                    </div>
-                  </>
+              {/* Tab Navigation */}
+              <div className="flex justify-between mb-8 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-2 shadow-lg border border-gray-200">
+                <button
+                  onClick={() => setTab("cart")}
+                  className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-colors duration-200 ${
+                    tab === "cart"
+                      ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg"
+                      : "text-gray-700 hover:bg-white hover:shadow-md"
+                  }`}
+                >
+                  Cart
+                </button>
+                <button
+                  onClick={() => setTab("order")}
+                  className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-colors duration-200 ${
+                    tab === "order"
+                      ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg"
+                      : "text-gray-700 hover:bg-white hover:shadow-md"
+                  }`}
+                >
+                  Order
+                </button>
+              </div>
+
+              {/* Content Area - Full height below tabs */}
+              <div className="flex-1 min-h-0">
+                {tab === "cart" ? (
+                  <CartTab onCheckout={checkout} isLoading={isLoading} />
                 ) : (
-                  <>
-                    <h3 className="text-lg font-semibold mb-2">My orders</h3>
-                    <p className="text-gray-500 text-sm">
-                      No orders placed yet.
-                    </p>
-                  </>
+                  <OrderTab isLoggedIn={isLoggedIn} />
                 )}
               </div>
             </SheetHeader>
@@ -323,6 +246,14 @@ export const Header = () => {
           </>
         )}
       </div>
+
+      <CustomAlertDialog
+        isOpen={alertDialog.isOpen}
+        onClose={closeAlert}
+        title={alertDialog.title}
+        description={alertDialog.description}
+        type={alertDialog.type}
+      />
     </header>
   );
 };
