@@ -17,14 +17,11 @@ export const OrderTab = ({ isLoggedIn }: OrderTabProps) => {
     setOrdersLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/order`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch("http://localhost:8000/order/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.ok) {
         const ordersData = await response.json();

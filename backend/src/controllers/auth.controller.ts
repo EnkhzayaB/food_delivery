@@ -6,8 +6,27 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET || "zaya123";
 
 export const signUp = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password, adminCode } = req.body;
   try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({
+        success: false,
+        message: "Энэ имэйл хаягаар аль хэдийн бүртгэлтэй хэрэглэгч байна",
+      });
+      return;
+    }
+
+    // Admin code шалгах
+    const ADMIN_SECRET_CODE =
+      process.env.ADMIN_SECRET_CODE || "NOMNOM_ADMIN_2024";
+    let userRole = "USER";
+
+    if (adminCode && adminCode === ADMIN_SECRET_CODE) {
+      userRole = "ADMIN";
+    }
+
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
 
@@ -15,14 +34,18 @@ export const signUp = async (req: Request, res: Response) => {
     const createdUser = await User.create({
       email: email,
       password: hashedPassword,
-      role: "USER", // Always create as USER for public signup
+      role: userRole,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     res.status(200).json({
       success: true,
       data: createdUser,
     });
   } catch (error) {
-    res.status(404).json({ success: false, error: error });
+    res
+      .status(500)
+      .json({ success: false, message: "Бүртгэл үүсгэхэд алдаа гарлаа" });
   }
 };
 
@@ -36,11 +59,16 @@ export const signIn = async (
 
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(400).json({ message: "No user found" });
+    if (!user) {
+      res.status(400).json({ message: "No user found" });
+      return;
+    }
 
     const comparedPassword = await bcrypt.compare(password, user.password);
-    if (!comparedPassword)
-      return res.status(401).json({ message: "Incorrect password" });
+    if (!comparedPassword) {
+      res.status(401).json({ message: "Incorrect password" });
+      return;
+    }
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
       expiresIn: "1d",

@@ -58,6 +58,27 @@ export const getAllOrders = async (_req: Request, res: Response) => {
   }
 };
 
+export const getUserOrders = async (req: any, res: Response) => {
+  try {
+    const userId = req.user.id; // JWT token-оос авсан user ID
+
+    const orders = await Order.find({ user: userId })
+      .populate("user")
+      .populate({
+        path: "foodOrderItems",
+        populate: {
+          path: "food",
+          model: "Food",
+        },
+      })
+      .sort({ createdAt: -1 }); // Хамгийн шинийг эхэнд
+
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to fetch orders" });
+  }
+};
+
 export const getOrder = async (req: Request, res: Response) => {
   try {
     const order = await Order.findById(req.params.id)

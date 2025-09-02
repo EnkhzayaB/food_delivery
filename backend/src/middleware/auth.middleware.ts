@@ -21,7 +21,8 @@ export const authMiddleware = (req: any, res: Response, next: any) => {
   const token = authHeader?.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(401).json({ error: "Access denied, token required" });
+    res.status(401).json({ error: "Access denied, token required" });
+    return;
   }
 
   try {
@@ -36,7 +37,8 @@ export const authMiddleware = (req: any, res: Response, next: any) => {
 // Admin middleware that checks if user is admin
 export const adminMiddleware = (req: any, res: Response, next: any) => {
   if (req.user?.role !== "ADMIN") {
-    return res.status(403).json({ error: "Admin access required" });
+    res.status(403).json({ error: "Admin access required" });
+    return;
   }
   next();
 };
