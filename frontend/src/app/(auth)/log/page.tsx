@@ -71,8 +71,14 @@ const LoginPage = () => {
       console.log("login", result);
 
       if (result.success) {
-        login(result.token, result.data.email);
-        router.push("/");
+        login(result.token, result.data.email, result.data.role);
+
+        // Redirect based on role
+        if (result.data.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       } else {
         showAlert(
           "Login Failed",

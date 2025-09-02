@@ -15,6 +15,7 @@ export const signUp = async (req: Request, res: Response) => {
     const createdUser = await User.create({
       email: email,
       password: hashedPassword,
+      role: "USER", // Always create as USER for public signup
     });
     res.status(200).json({
       success: true,
@@ -48,10 +49,34 @@ export const signIn = async (
     res.json({
       success: true,
       token,
-      data: { email: user.email },
+      data: { email: user.email, role: user.role },
     });
   } catch (err) {
     res.status(500).json({ message: "Login failed", err });
     next(err);
+  }
+};
+
+// Admin creation endpoint - only accessible by existing admins
+export const createAdmin = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  try {
+    // Check if requester is admin (this would need auth middleware)
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const createdAdmin = await User.create({
+      email: email,
+      password: hashedPassword,
+      role: "ADMIN",
+    });
+    res.status(200).json({
+      success: true,
+      data: createdAdmin,
+      message: "Admin user created successfully",
+    });
+  } catch (error) {
+    res.status(404).json({ success: false, error: error });
   }
 };

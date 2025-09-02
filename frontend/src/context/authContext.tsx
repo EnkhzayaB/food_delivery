@@ -3,8 +3,9 @@ import { createContext, useState, useEffect, useContext } from "react";
 
 type AuthContextType = {
   email: string | null;
+  role: string | null;
   isLoggedIn: boolean;
-  login: (token: string, email: string) => void;
+  login: (token: string, email: string, role?: string) => void;
   logout: () => void;
 };
 
@@ -12,20 +13,27 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const email = localStorage.getItem("email");
+    const role = localStorage.getItem("role");
     if (token && email) {
       setIsLoggedIn(true);
       setEmail(email);
+      setRole(role);
     }
   }, []);
 
-  const login = (token: string, email: string) => {
+  const login = (token: string, email: string, userRole?: string) => {
     localStorage.setItem("token", token);
     localStorage.setItem("email", email);
+    if (userRole) {
+      localStorage.setItem("role", userRole);
+      setRole(userRole);
+    }
     setIsLoggedIn(true);
     setEmail(email);
   };
@@ -33,12 +41,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
+    localStorage.removeItem("role");
     setIsLoggedIn(false);
     setEmail(null);
+    setRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ email, isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ email, role, isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 
 export const Header = () => {
-  const { isLoggedIn, email, logout } = useAuth();
+  const { isLoggedIn, email, role, logout } = useAuth();
   const { cart, clearCart } = useCart();
   const [tab, setTab] = useState<"cart" | "order">("cart");
   const [isLoading, setIsLoading] = useState(false);
@@ -222,12 +222,21 @@ export const Header = () => {
             </button>
             <div className="absolute hidden group-hover:block bg-white text-black p-4 shadow rounded top-full right-0">
               <p>{email}</p>
+              <p className="text-xs text-gray-500">{role}</p>
+              {role === "ADMIN" && (
+                <Link
+                  href="/admin"
+                  className="block mt-2 bg-blue-500 text-white px-2 py-1 rounded text-center hover:bg-blue-600"
+                >
+                  Admin Panel
+                </Link>
+              )}
               <button
                 onClick={() => {
                   logout();
                   clearCart();
                 }}
-                className="mt-2 bg-gray-200 px-2 py-1 rounded"
+                className="mt-2 bg-gray-200 px-2 py-1 rounded w-full"
               >
                 Sign out
               </button>
