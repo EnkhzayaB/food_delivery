@@ -49,9 +49,9 @@ export default function RegisterPage() {
     setAlertDialog({ ...alertDialog, isOpen: false });
   };
 
-  const methods = useForm<FormDataType>({
+  const methods = useForm({
     resolver: yupResolver(registerSchema),
-    mode: "onTouched",
+    mode: "onTouched" as const,
     defaultValues: {
       email: "",
       password: "",
@@ -215,7 +215,7 @@ export default function RegisterPage() {
               </div>
 
               <button
-                onClick={methods.handleSubmit(onSubmit)}
+                onClick={() => methods.handleSubmit(onSubmit)()}
                 className="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
               >
                 Create Account

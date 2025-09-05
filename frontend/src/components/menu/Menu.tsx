@@ -50,35 +50,37 @@ export const Menu = () => {
   };
   return (
     <>
-      {category.map((category, index) => {
-        return (
-          <div key={index}>
-            <h2 className="font-semibold text-3xl mt-10 mb-4 mx-6 md:mx-25 2xl:mx-26">
-              {category.categoryName}
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 mx-6 md:mx-25 2xl:mx-26">
-              {foods &&
-                foods
-                  .filter(
-                    (food) =>
-                      food.category?.categoryName === category.categoryName
-                  )
-                  .slice(0, 8)
-                  .map((food, index) => {
-                    return <FoodCards food={food} key={index}></FoodCards>;
-                  })}
-              <Link href={`/${category.categoryName}`}>
-                <div className="bg-gray-100 rounded-[20px] shadow-md p-1.5 hover:shadow-2xl flex justify-center items-center hover:bg-gray-200">
-                  <p className="text-md font-semibold mt-2 text-[#EF4444]">
-                    {" "}
-                    See more
-                  </p>
-                </div>
-              </Link>
+      {category &&
+        category.length > 0 &&
+        category.map((category, index) => {
+          return (
+            <div key={index}>
+              <h2 className="font-semibold text-3xl mt-10 mb-4 mx-6 md:mx-25 2xl:mx-26">
+                {category.categoryName}
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 mx-6 md:mx-25 2xl:mx-26">
+                {foods &&
+                  foods
+                    .filter(
+                      (food) =>
+                        food.category?.categoryName === category.categoryName
+                    )
+                    .slice(0, 8)
+                    .map((food, index) => {
+                      return <FoodCards food={food} key={index}></FoodCards>;
+                    })}
+                <Link href={`/${category.categoryName}`}>
+                  <div className="bg-gray-100 rounded-[20px] shadow-md p-1.5 hover:shadow-2xl flex justify-center items-center hover:bg-gray-200">
+                    <p className="text-md font-semibold mt-2 text-[#EF4444]">
+                      {" "}
+                      See more
+                    </p>
+                  </div>
+                </Link>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
     </>
   );
 };
