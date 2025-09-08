@@ -7,7 +7,7 @@ export const getCategory = async (req: Request, res: Response) => {
     const category = await Category.find();
     res.json({ success: true, data: category });
   } catch (error) {
-    res.status(303).json({ success: false, error: error });
+    res.status(500).json({ success: false, error: error });
   }
 };
 
@@ -18,7 +18,7 @@ export const createCategory = async (req: Request, res: Response) => {
 
     res.json({ success: true, data: createCategory });
   } catch (error) {
-    res.status(402).json({ success: false, error: error });
+    res.status(500).json({ success: false, error: error });
   }
 };
 
@@ -34,9 +34,9 @@ export const updateCategory = async (req: Request, res: Response) => {
         new: true,
       }
     );
-    res.status(202).json({ success: true, data: category });
+    res.status(200).json({ success: true, data: category });
   } catch (error) {
-    res.status(403).json({ success: true, error: error });
+    res.status(400).json({ success: false, error: error });
   }
 };
 

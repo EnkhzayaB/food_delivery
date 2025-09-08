@@ -1,11 +1,7 @@
-import { AppSidebar } from "@/components/admin/SideBar";
+import { AdminTabs } from "@/components/admin";
 
 const AdminHome = () => {
-  return (
-    <div className="flex-col lg:flex-row min-h-screen">
-      <AppSidebar />
-    </div>
-  );
+  return <AdminTabs />;
 };
 
 export default AdminHome;

@@ -22,7 +22,8 @@ server.use("/food", foodsRouter);
 server.use("/order", orderRouter);
 server.use("/category", categoryRouter);
 server.use("/items", foodOrderItemRouter);
-server.use("/auth", authRouter, userRouter);
+server.use("/auth", authRouter);
+server.use("/user", userRouter);
 
 server.get("/", (_request, response) => {
   response.send("Hello zaya");

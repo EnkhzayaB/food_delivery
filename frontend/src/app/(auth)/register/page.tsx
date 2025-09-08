@@ -5,6 +5,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { CustomAlertDialog } from "@/components/dialogs/CustomAlertDialog";
 import { PasswordInput } from "@/components/auth/PasswordInput";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { useRouter } from "next/navigation";
 
 const registerSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -26,6 +28,7 @@ const registerSchema = yup.object({
 type FormDataType = yup.InferType<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [alertDialog, setAlertDialog] = useState<{
     isOpen: boolean;
@@ -130,6 +133,32 @@ export default function RegisterPage() {
                 <p className="text-gray-600 text-lg font-normal">
                   Sign up to explore your favorite dishes.
                 </p>
+              </div>
+
+              {/* Google Sign Up Button */}
+              <GoogleSignInButton
+                text="Sign up with Google"
+                onSuccess={() => {
+                  // Google sign up success is handled by NextAuth
+                  router.push("/");
+                }}
+                onError={(error) => {
+                  showAlert(
+                    "Google Sign Up Failed",
+                    "Failed to sign up with Google. Please try again."
+                  );
+                }}
+              />
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-muted-foreground">
+                    Or
+                  </span>
+                </div>
               </div>
               <div>
                 <label

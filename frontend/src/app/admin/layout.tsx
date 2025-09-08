@@ -1,9 +1,10 @@
 "use client";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/admin/SideBar";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { SessionProvider } from "@/components/providers/SessionProvider";
+import { AuthProvider } from "@/context/authContext";
+import { CartProvider } from "@/context/CartContext";
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { isLoggedIn, role } = useAuth();
@@ -34,13 +35,11 @@ function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
-    </SidebarProvider>
+    <SessionProvider>
+      <AuthProvider>
+        <CartProvider>{children}</CartProvider>
+      </AuthProvider>
+    </SessionProvider>
   );
 }
 export default Layout;

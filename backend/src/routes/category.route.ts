@@ -4,7 +4,6 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-  getCategoryPage,
 } from "../controllers/category.controller.js";
 import verifyToken from "../middleware/auth.middleware.js";
 

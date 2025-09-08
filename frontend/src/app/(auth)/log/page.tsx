@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/authContext";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -107,6 +108,29 @@ const LoginPage = () => {
               Welcome Back
             </h1>
             <p className="text-gray-600">Sign in to your account</p>
+          </div>
+
+          {/* Google Sign In Button */}
+          <GoogleSignInButton
+            onSuccess={() => {
+              // Google sign in success is handled by NextAuth
+              router.push("/");
+            }}
+            onError={(error) => {
+              showAlert(
+                "Google Sign In Failed",
+                "Failed to sign in with Google. Please try again."
+              );
+            }}
+          />
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">Or</span>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

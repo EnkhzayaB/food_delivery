@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/authContext";
 import { useCart } from "@/context/CartContext";
 import { CustomAlertDialog } from "@/components/dialogs/CustomAlertDialog";
 import { CartTab } from "./CartTab";

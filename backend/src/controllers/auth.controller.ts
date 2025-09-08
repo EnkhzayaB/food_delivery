@@ -108,3 +108,57 @@ export const createAdmin = async (req: Request, res: Response) => {
     res.status(404).json({ success: false, error: error });
   }
 };
+
+export const googleAuth = async (req: Request, res: Response) => {
+  const { email, name, googleId, picture } = req.body;
+
+  try {
+    // Check if user already exists
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // User exists, update Google info if needed
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.name = name;
+        user.picture = picture;
+        await user.save();
+      }
+    } else {
+      // Create new user with Google info
+      user = await User.create({
+        email: email,
+        name: name,
+        googleId: googleId,
+        picture: picture,
+        role: "USER",
+        password: "", // No password for Google users
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.json({
+      success: true,
+      token,
+      data: {
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        picture: user.picture,
+      },
+    });
+  } catch (error) {
+    console.error("Google auth error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Google authentication failed",
+      error: error,
+    });
+  }
+};

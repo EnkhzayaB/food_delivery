@@ -4,7 +4,7 @@ import {
   createOrder,
   getOrder,
   getUserOrders,
-  //   updateOrder,
+  updateOrderStatus,
 } from "../controllers/order.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
@@ -14,6 +14,6 @@ orderRouter.get("/", getAllOrders); // Admin-д зориулсан - бүх за
 orderRouter.get("/user", authMiddleware, getUserOrders); // Тухайн хэрэглэгчийн захиалга
 orderRouter.get("/:id", getOrder);
 orderRouter.post("/", createOrder);
-// orderRouter.put("/:orderId", updateOrder);
+orderRouter.put("/:id", authMiddleware, updateOrderStatus); // Update order status
 
 export default orderRouter;
