@@ -66,19 +66,19 @@ export function AdminTabs({ initialOrders = [] }: AdminTabsProps) {
       {/* Main Content with Tabs */}
       <div className="px-6 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-gray-100 p-1 text-muted-foreground mb-8">
+          <TabsList className="inline-flex h-16 items-center justify-center rounded-xl bg-gray-100 p-2 text-muted-foreground mb-8 shadow-sm">
             <TabsTrigger
               value="dashboard"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-6 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-3 text-base font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-md gap-3 min-w-[140px]"
             >
-              <BarChart3 className="h-4 w-4" />
+              <BarChart3 className="h-5 w-5" />
               Dashboard
             </TabsTrigger>
             <TabsTrigger
               value="orders"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-6 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-3 text-base font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-md gap-3 min-w-[140px]"
             >
-              <Package className="h-4 w-4" />
+              <Package className="h-5 w-5" />
               Orders
             </TabsTrigger>
           </TabsList>

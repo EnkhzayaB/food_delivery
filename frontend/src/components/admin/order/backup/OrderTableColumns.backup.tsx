@@ -4,6 +4,8 @@ import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { OrderItem } from "../api/OrderTableTypes";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { OrderItem } from "./OrderTableTypes";
 
 const statusConfig = {
   PENDING: {

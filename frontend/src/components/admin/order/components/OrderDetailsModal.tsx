@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { OrderItem } from "./OrderTableTypes";
+import { OrderItem } from "../api/OrderTableTypes";
 import { X, MapPin, User, Clock, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 

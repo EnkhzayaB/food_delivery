@@ -4,8 +4,8 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { OrderTableProps } from "./OrderTableTypes";
-import { createOrderColumns } from "./OrderTableColumns";
+import { OrderTableProps } from "../api/OrderTableTypes";
+import { createOrderColumns } from "../table/OrderTableColumns";
 import {
   ColumnFiltersState,
   flexRender,

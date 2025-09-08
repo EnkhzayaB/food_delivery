@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { OrderTable } from "./OrderTable";
+import { OrderTable } from "../table/OrderTable";
 import { OrderDetailsModal } from "./OrderDetailsModal";
 import { OrderStats } from "./OrderStats";
 import {
   fetchOrders,
   updateOrderStatus,
   bulkUpdateOrderStatus,
-} from "./OrderAPI";
-import { OrderItem } from "./OrderTableTypes";
+} from "../api/OrderAPI";
+import { OrderItem } from "../api/OrderTableTypes";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,

@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Truck, DollarSign, Package } from "lucide-react";
-import { OrderItem } from "./OrderTableTypes";
+import { OrderItem } from "../api/OrderTableTypes";
 
 interface OrderStatsProps {
   orders: OrderItem[];
