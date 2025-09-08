@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -37,7 +37,8 @@ const getStatusConfig = (status: string) =>
   };
 
 export const createOrderColumns = (
-  onStatusChange: (orderId: string, newStatus: string) => void
+  onStatusChange: (orderId: string, newStatus: string) => void,
+  onOrderClick?: (order: OrderItem) => void
 ): ColumnDef<OrderItem>[] => [
   {
     id: "select",
@@ -49,6 +50,7 @@ export const createOrderColumns = (
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     cell: ({ row }) => (
@@ -56,6 +58,7 @@ export const createOrderColumns = (
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     enableSorting: false,
@@ -86,7 +89,14 @@ export const createOrderColumns = (
     },
     cell: ({ row }) => {
       const order = row.original;
-      return <div className="lowercase text-base">{order.user.email}</div>;
+      return (
+        <div
+          className="lowercase text-base cursor-pointer hover:text-blue-600 hover:underline"
+          onClick={() => onOrderClick && onOrderClick(order)}
+        >
+          {order.user?.email || "N/A"}
+        </div>
+      );
     },
   },
   {
@@ -94,24 +104,44 @@ export const createOrderColumns = (
     header: "Food",
     cell: ({ row }) => {
       const order = row.original;
-      const foodCount = order.foodOrderItems.length;
-      const firstFood = order.foodOrderItems[0]?.food.name || "No items";
+      const foodItems = order.foodOrderItems;
+
+      if (!foodItems || foodItems.length === 0) {
+        return <div className="max-w-[200px] text-gray-500">No items</div>;
+      }
+
+      const foodCount = foodItems.length;
+      const totalQuantity = foodItems.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+      );
 
       return (
         <div className="max-w-[200px]">
-          <div className="font-medium text-base">{firstFood}</div>
-          {foodCount > 1 && (
-            <div className="text-sm text-gray-500">
-              +{foodCount - 1} more items
-            </div>
-          )}
+          <span
+            className="font-medium text-sm text-gray-900 cursor-pointer hover:text-blue-600 hover:underline"
+            onClick={() => onOrderClick && onOrderClick(order)}
+          >
+            {foodCount} food{foodCount > 1 ? "s" : ""}
+          </span>
         </div>
       );
     },
   },
   {
     accessorKey: "createdAt",
-    header: "Date",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-8 px-2 lg:px-3"
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"));
       return <div className="text-base">{date.toLocaleDateString()}</div>;
@@ -164,62 +194,64 @@ export const createOrderColumns = (
     header: "Delivery Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      const config = getStatusConfig(status);
-      return (
-        <div className="min-w-[120px]">
-          <Badge
-            variant={config.variant}
-            className={`${config.color} text-sm font-medium px-3 py-1 whitespace-nowrap`}
-          >
-            {status}
-          </Badge>
-        </div>
-      );
-    },
-    size: 140,
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    enableHiding: false,
-    cell: ({ row }) => {
       const order = row.original;
+      const config = getStatusConfig(status);
 
       return (
-        <div className="min-w-[80px] flex justify-center">
+        <div className="min-w-[120px]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-gray-100">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+              <Button
+                variant="outline"
+                className={`${config.color} border-0 text-sm font-medium px-3 py-1 h-7 rounded-full hover:opacity-80 cursor-pointer`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {status}
+                <ChevronDown className="ml-2 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+            <DropdownMenuContent align="start" className="w-40">
               <DropdownMenuItem
-                onClick={() => onStatusChange(order._id, "PENDING")}
-                disabled={order.status === "PENDING"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(order._id, "DELIVERED");
+                }}
+                className="cursor-pointer"
               >
-                Mark as Pending
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  Delivered
+                </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onStatusChange(order._id, "DELIVERED")}
-                disabled={order.status === "DELIVERED"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(order._id, "PENDING");
+                }}
+                className="cursor-pointer"
               >
-                Mark as Delivered
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                  Pending
+                </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onStatusChange(order._id, "CANCELLED")}
-                disabled={order.status === "CANCELLED"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStatusChange(order._id, "CANCELLED");
+                }}
+                className="cursor-pointer"
               >
-                Mark as Cancelled
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  Cancelled
+                </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       );
     },
-    size: 80,
+    size: 140,
   },
 ];

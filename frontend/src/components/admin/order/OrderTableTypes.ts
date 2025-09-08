@@ -7,7 +7,9 @@ export type OrderItem = {
   foodOrderItems: Array<{
     food: {
       _id: string;
-      name: string;
+      name?: string;
+      foodName?: string;
+      image?: string;
     };
     quantity: number;
   }>;
@@ -20,5 +22,7 @@ export type OrderItem = {
 export interface OrderTableProps {
   orders: OrderItem[];
   onStatusChange: (orderId: string, newStatus: string) => void;
+  onBulkStatusChange?: (orderIds: string[], newStatus: string) => void;
+  onOrderClick?: (order: OrderItem) => void;
   isLoading?: boolean;
 }

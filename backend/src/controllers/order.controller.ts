@@ -142,6 +142,51 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   }
 };
 
+// Bulk update order status
+export const bulkUpdateOrderStatus = async (req: Request, res: Response) => {
+  try {
+    const { orderIds, status } = req.body;
+
+    // Validate inputs
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "orderIds must be a non-empty array",
+      });
+    }
+
+    // Validate status
+    const validStatuses = ["PENDING", "DELIVERED", "CANCELLED"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status. Must be PENDING, DELIVERED, or CANCELLED",
+      });
+    }
+
+    // Update multiple orders
+    const result = await Order.updateMany(
+      { _id: { $in: orderIds } },
+      { status: status }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `${result.modifiedCount} orders updated successfully`,
+      data: {
+        modifiedCount: result.modifiedCount,
+        matchedCount: result.matchedCount,
+      },
+    });
+  } catch (error) {
+    console.error("Error in bulk update:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to bulk update order status",
+    });
+  }
+};
+
 // {"user": "6858f722e2ca28c9f065da78",
 // "foodOrderItems": ["685c5451f012563f0ece9c6a", "685c58b7ded25782b44f88c9"],
 // "totalPrice": 27000,

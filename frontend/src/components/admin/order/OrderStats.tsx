@@ -7,9 +7,15 @@ import { OrderItem } from "./OrderTableTypes";
 
 interface OrderStatsProps {
   orders: OrderItem[];
+  onStatusFilter?: (status: string | null) => void;
+  activeFilter?: string | null;
 }
 
-export function OrderStats({ orders }: OrderStatsProps) {
+export function OrderStats({
+  orders,
+  onStatusFilter,
+  activeFilter,
+}: OrderStatsProps) {
   const stats = {
     total: orders.length,
     pending: orders.filter((o) => o.status === "PENDING").length,
@@ -22,7 +28,12 @@ export function OrderStats({ orders }: OrderStatsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-      <Card className="border-0 shadow-sm bg-white">
+      <Card
+        className={`border-0 shadow-sm bg-white cursor-pointer transition-all hover:shadow-md ${
+          activeFilter === null ? "ring-2 ring-blue-200 bg-blue-50" : ""
+        }`}
+        onClick={() => onStatusFilter && onStatusFilter(null)}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-gray-600">
             Total Orders
@@ -35,7 +46,14 @@ export function OrderStats({ orders }: OrderStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-0 shadow-sm bg-white">
+      <Card
+        className={`border-0 shadow-sm bg-white cursor-pointer transition-all hover:shadow-md ${
+          activeFilter === "PENDING"
+            ? "ring-2 ring-yellow-200 bg-yellow-50"
+            : ""
+        }`}
+        onClick={() => onStatusFilter && onStatusFilter("PENDING")}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-gray-600">
             Pending
@@ -50,7 +68,14 @@ export function OrderStats({ orders }: OrderStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-0 shadow-sm bg-white">
+      <Card
+        className={`border-0 shadow-sm bg-white cursor-pointer transition-all hover:shadow-md ${
+          activeFilter === "DELIVERED"
+            ? "ring-2 ring-green-200 bg-green-50"
+            : ""
+        }`}
+        onClick={() => onStatusFilter && onStatusFilter("DELIVERED")}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-gray-600">
             Delivered
@@ -65,7 +90,12 @@ export function OrderStats({ orders }: OrderStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-0 shadow-sm bg-white">
+      <Card
+        className={`border-0 shadow-sm bg-white cursor-pointer transition-all hover:shadow-md ${
+          activeFilter === "CANCELLED" ? "ring-2 ring-red-200 bg-red-50" : ""
+        }`}
+        onClick={() => onStatusFilter && onStatusFilter("CANCELLED")}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-gray-600">
             Cancelled

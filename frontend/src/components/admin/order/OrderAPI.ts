@@ -1,17 +1,15 @@
 import { OrderItem } from "./OrderTableTypes";
+import { baseurl } from "@/utils/baseUrl";
 
 // Fetch orders from backend
 export const fetchOrders = async (): Promise<OrderItem[]> => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/order`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`${baseurl}/order`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (response.ok) {
       const result = await response.json();
@@ -33,17 +31,14 @@ export const updateOrderStatus = async (
 ): Promise<boolean> => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/${orderId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      }
-    );
+    const response = await fetch(`${baseurl}/order/${orderId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
 
     if (response.ok) {
       const result = await response.json();
@@ -53,5 +48,40 @@ export const updateOrderStatus = async (
   } catch (error) {
     console.error("Failed to update order status:", error);
     return false;
+  }
+};
+
+// Bulk update order status
+export const bulkUpdateOrderStatus = async (
+  orderIds: string[],
+  newStatus: string
+): Promise<{
+  success: boolean;
+  modifiedCount?: number;
+  orders?: OrderItem[];
+}> => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${baseurl}/order/bulk-update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ orderIds, status: newStatus }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return {
+        success: result.success,
+        modifiedCount: result.data?.modifiedCount,
+        orders: result.data?.orders,
+      };
+    }
+    return { success: false };
+  } catch (error) {
+    console.error("Failed to bulk update order status:", error);
+    return { success: false };
   }
 };

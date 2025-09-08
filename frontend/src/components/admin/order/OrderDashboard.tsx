@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { OrderTable } from "./OrderTable";
-import { OrderStatusModal } from "./OrderStatusModal";
+import { OrderDetailsModal } from "./OrderDetailsModal";
 import { OrderStats } from "./OrderStats";
-import { fetchOrders, updateOrderStatus } from "./OrderAPI";
+import {
+  fetchOrders,
+  updateOrderStatus,
+  bulkUpdateOrderStatus,
+} from "./OrderAPI";
 import { OrderItem } from "./OrderTableTypes";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -15,9 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCw } from "lucide-react";
-import { format } from "date-fns";
+// Removed Tabs import as we're simplifying the UI
 
 interface OrderDashboardProps {
   initialOrders?: OrderItem[];
@@ -25,25 +26,17 @@ interface OrderDashboardProps {
 
 export function OrderDashboard({ initialOrders = [] }: OrderDashboardProps) {
   const [orders, setOrders] = useState<OrderItem[]>(initialOrders);
-  const [filteredOrders, setFilteredOrders] =
-    useState<OrderItem[]>(initialOrders);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
-  const [currentOrderStatus, setCurrentOrderStatus] = useState<string>("");
-  const [activeTab, setActiveTab] = useState("all");
+  const [orderDetailsOpen, setOrderDetailsOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
-  // Filter orders based on active tab
-  useEffect(() => {
-    if (activeTab === "all") {
-      setFilteredOrders(orders);
-    } else {
-      setFilteredOrders(
-        orders.filter((order) => order.status === activeTab.toUpperCase())
-      );
-    }
-  }, [orders, activeTab]);
+  // Filter orders based on selected status
+  const filteredOrders = useMemo(() => {
+    if (!statusFilter) return orders;
+    return orders.filter((order) => order.status === statusFilter);
+  }, [orders, statusFilter]);
 
   // Fetch orders from backend
   const handleFetchOrders = async () => {
@@ -60,35 +53,63 @@ export function OrderDashboard({ initialOrders = [] }: OrderDashboardProps) {
     }
   }, []);
 
-  // Handle status change
-  const handleStatusChange = (orderId: string, newStatus: string) => {
-    const order = orders.find((o) => o._id === orderId);
-    if (order) {
-      setSelectedOrderId(orderId);
-      setCurrentOrderStatus(order.status);
-      setStatusModalOpen(true);
-    }
-  };
-
-  // Confirm status change
-  const handleStatusConfirm = async (newStatus: string) => {
+  // Handle status change - direct update without modal
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
     setIsUpdating(true);
-    const success = await updateOrderStatus(selectedOrderId, newStatus);
-
+    const success = await updateOrderStatus(orderId, newStatus);
     if (success) {
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order._id === selectedOrderId
-            ? { ...order, status: newStatus as any }
-            : order
+          order._id === orderId ? { ...order, status: newStatus as any } : order
         )
       );
-      setStatusModalOpen(false);
     }
     setIsUpdating(false);
   };
 
-  // Calculate statistics for tabs
+  // Handle bulk status change
+  const handleBulkStatusChange = async (
+    orderIds: string[],
+    newStatus: string
+  ) => {
+    console.log("🚀 Starting bulk status change:", { orderIds, newStatus });
+    setIsUpdating(true);
+    try {
+      const result = await bulkUpdateOrderStatus(orderIds, newStatus);
+      console.log("🔄 Bulk update result:", result);
+
+      if (result.success) {
+        console.log("✅ Bulk update successful, updating UI state");
+        // Update the orders in state
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            orderIds.includes(order._id)
+              ? { ...order, status: newStatus as any }
+              : order
+          )
+        );
+        console.log("✨ UI state updated");
+      } else {
+        console.error("❌ Bulk update failed:", result);
+      }
+    } catch (error) {
+      console.error("💥 Bulk status update failed:", error);
+    }
+    setIsUpdating(false);
+  };
+
+  // Handle order click to show details
+  const handleOrderClick = (order: OrderItem) => {
+    setSelectedOrder(order);
+    setOrderDetailsOpen(true);
+  };
+
+  // Handle status card click to filter orders
+  const handleStatusFilter = (status: string | null) => {
+    setStatusFilter(status);
+  };
+
+  // Calculate statistics (removed tab functionality)
   const stats = {
     total: orders.length,
     pending: orders.filter((o) => o.status === "PENDING").length,
@@ -98,115 +119,42 @@ export function OrderDashboard({ initialOrders = [] }: OrderDashboardProps) {
 
   return (
     <div className="w-full space-y-6">
-      {/* Mini Header */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          Last updated: {format(new Date(), "MMM dd, HH:mm")}
-        </div>
-        <Button
-          onClick={handleFetchOrders}
-          disabled={isLoading}
-          variant="outline"
-          size="sm"
-          className="shadow-sm"
-        >
-          <RefreshCw
-            className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-          />
-          Refresh
-        </Button>
-      </div>
-
       {/* Statistics Cards */}
-      <OrderStats orders={orders} />
+      <OrderStats
+        orders={orders}
+        onStatusFilter={handleStatusFilter}
+        activeFilter={statusFilter}
+      />
 
-      {/* Orders Table with Tabs */}
+      {/* Orders Table - Simplified without tabs */}
       <Card className="border-0 shadow-sm bg-white">
-        <CardHeader className="border-b border-gray-100">
+        <CardHeader className="border-b border-gray-100 pb-2">
           <CardTitle className="text-lg font-semibold text-gray-900">
             Orders
           </CardTitle>
-          <CardDescription className="text-gray-600">
-            View and manage customer orders by status
+          <CardDescription className="text-gray-600 mt-1">
+            {statusFilter
+              ? `Showing ${statusFilter.toLowerCase()} orders`
+              : "View and manage all customer orders"}
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <div className="px-6 pt-6">
-              <TabsList className="grid w-full grid-cols-4 bg-gray-50 rounded-lg p-1">
-                <TabsTrigger
-                  value="all"
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
-                >
-                  All Orders
-                  <Badge variant="secondary" className="ml-1 text-xs">
-                    {stats.total}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="pending"
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
-                >
-                  Pending
-                  <Badge
-                    variant="secondary"
-                    className="ml-1 text-xs bg-yellow-100 text-yellow-800"
-                  >
-                    {stats.pending}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="delivered"
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
-                >
-                  Delivered
-                  <Badge
-                    variant="secondary"
-                    className="ml-1 text-xs bg-green-100 text-green-800"
-                  >
-                    {stats.delivered}
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="cancelled"
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
-                >
-                  Cancelled
-                  <Badge
-                    variant="secondary"
-                    className="ml-1 text-xs bg-red-100 text-red-800"
-                  >
-                    {stats.cancelled}
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value={activeTab} className="m-0">
-              <div className="p-6">
-                <OrderTable
-                  orders={filteredOrders}
-                  onStatusChange={handleStatusChange}
-                  isLoading={isLoading}
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
+        <CardContent className="px-6 pt-2 pb-6">
+          <OrderTable
+            orders={filteredOrders}
+            onStatusChange={handleStatusChange}
+            onBulkStatusChange={handleBulkStatusChange}
+            onOrderClick={handleOrderClick}
+            isLoading={isLoading}
+          />
         </CardContent>
       </Card>
 
-      {/* Status Change Modal */}
-      <OrderStatusModal
-        isOpen={statusModalOpen}
-        onClose={() => setStatusModalOpen(false)}
-        onConfirm={handleStatusConfirm}
-        currentStatus={currentOrderStatus}
-        orderId={selectedOrderId}
-        isLoading={isUpdating}
+      {/* Order Details Modal */}
+      <OrderDetailsModal
+        isOpen={orderDetailsOpen}
+        onClose={() => setOrderDetailsOpen(false)}
+        order={selectedOrder}
+        onStatusChange={handleStatusChange}
       />
     </div>
   );
