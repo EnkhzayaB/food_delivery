@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useAuth } from "@/context/authContext";
+import { useUser } from "@clerk/nextjs";
 
 type CartItem = {
   id: string;
@@ -21,27 +21,32 @@ const CartContext = createContext<CartContextType | null>(null);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const { email } = useAuth();
+  const { user, isSignedIn } = useUser();
 
   useEffect(() => {
-    if (email) {
-      const savedCart = localStorage.getItem(`cart-${email}`);
+    if (isSignedIn && user) {
+      const savedCart = localStorage.getItem(`cart-${user.id}`);
       if (savedCart) {
         setCart(JSON.parse(savedCart));
       } else {
         setCart([]);
       }
     } else {
-      // Clear cart when user logs out (email becomes null)
-      setCart([]);
+      // For non-signed-in users, use general cart
+      const savedCart = localStorage.getItem("cart-guest");
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
     }
-  }, [email]);
+  }, [isSignedIn, user]);
 
   useEffect(() => {
-    if (email) {
-      localStorage.setItem(`cart-${email}`, JSON.stringify(cart));
+    if (isSignedIn && user) {
+      localStorage.setItem(`cart-${user.id}`, JSON.stringify(cart));
+    } else {
+      localStorage.setItem("cart-guest", JSON.stringify(cart));
     }
-  }, [cart, email]);
+  }, [cart, isSignedIn, user]);
 
   const addToCart = (item: CartItem) => {
     const currentIndex = cart.findIndex((i) => i.id === item.id);

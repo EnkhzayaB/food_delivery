@@ -1,32 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/context/authContext";
+import { useEffect, useState, useCallback } from "react";
+import { useUser } from "@clerk/nextjs";
 
-interface OrderTabProps {
-  isLoggedIn: boolean;
-}
-
-export const OrderTab = ({ isLoggedIn }: OrderTabProps) => {
+export const OrderTab = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const { user, isSignedIn } = useUser();
 
-  const fetchOrders = async () => {
-    if (!isLoggedIn) return;
+  const fetchOrders = useCallback(async () => {
+    if (!isSignedIn || !user) {
+      setOrders([]);
+      return;
+    }
 
     setOrdersLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/order/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // Fetch user-specific orders by passing userId as query parameter
+      const response = await fetch(
+        `http://localhost:8000/order/user?userId=${user.id}`
+      );
 
       if (response.ok) {
-        const ordersData = await response.json();
-        console.log("Orders data received:", ordersData); // Debug log
-        setOrders(ordersData);
+        const result = await response.json();
+        console.log("Orders data received:", result); // Debug log
+        setOrders(Array.isArray(result) ? result : result.data || []);
       } else {
         console.error("Failed to fetch orders");
       }
@@ -35,17 +33,11 @@ export const OrderTab = ({ isLoggedIn }: OrderTabProps) => {
     } finally {
       setOrdersLoading(false);
     }
-  };
+  }, [isSignedIn, user]);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchOrders();
-    }
-  }, [isLoggedIn]);
-
-  const refreshOrders = () => {
     fetchOrders();
-  };
+  }, [isSignedIn, user, fetchOrders]);
 
   return (
     <div className="h-full flex flex-col">
@@ -57,7 +49,27 @@ export const OrderTab = ({ isLoggedIn }: OrderTabProps) => {
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-        {ordersLoading ? (
+        {!isSignedIn ? (
+          <div className="text-center py-16">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-4xl">🔐</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">
+              Login Required
+            </h3>
+            <p className="text-gray-600 text-base leading-relaxed max-w-md mx-auto">
+              Та захиалгын түүхээ харахын тулд эхлээд нэвтэрнэ үү
+            </p>
+            <div className="mt-6">
+              <button
+                onClick={() => (window.location.href = "/sign-in")}
+                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
+        ) : ordersLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-3"></div>
             <p className="text-gray-500">Loading your orders...</p>
@@ -71,8 +83,8 @@ export const OrderTab = ({ isLoggedIn }: OrderTabProps) => {
               No Orders Yet?
             </h3>
             <p className="text-gray-600 text-base leading-relaxed max-w-md mx-auto">
-              You haven't placed any orders yet. Start exploring our menu and
-              satisfy your cravings!
+              You haven&apos;t placed any orders yet. Start exploring our menu
+              and satisfy your cravings!
             </p>
             <div className="mt-6">
               <button
@@ -84,7 +96,7 @@ export const OrderTab = ({ isLoggedIn }: OrderTabProps) => {
             </div>
           </div>
         ) : (
-          orders.map((order, index) => (
+          orders.map((order) => (
             <div
               key={order._id}
               className="group relative bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"

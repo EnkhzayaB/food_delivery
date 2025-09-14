@@ -1,6 +1,5 @@
 "use client";
-import { CldUploadButton, CldImage } from "next-cloudinary";
-import { Header, Banner, Footer } from "@/components";
+import { Banner, Footer } from "@/components";
 import { Menu } from "@/components/menu/Menu";
 
 export default function home() {

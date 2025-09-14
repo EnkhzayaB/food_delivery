@@ -61,7 +61,13 @@ export const getAllOrders = async (_req: Request, res: Response) => {
 
 export const getUserOrders = async (req: any, res: Response) => {
   try {
-    const userId = req.user.id; // JWT token-оос авсан user ID
+    const { userId } = req.query; // URL parameter-оос авах user ID
+
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required" });
+    }
 
     const orders = await Order.find({ user: userId })
       .populate("user")

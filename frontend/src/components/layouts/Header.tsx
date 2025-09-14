@@ -1,26 +1,30 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@/context/authContext";
 import { useCart } from "@/context/CartContext";
+import { useUser, SignOutButton } from "@clerk/nextjs";
 import { CustomAlertDialog } from "@/components/dialogs/CustomAlertDialog";
 import { CartTab } from "./CartTab";
 import { OrderTab } from "./OrderTab";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 
 export const Header = () => {
-  const { isLoggedIn, email, role, logout } = useAuth();
   const { cart, clearCart } = useCart();
+  const { isSignedIn, user, isLoaded } = useUser();
   const [tab, setTab] = useState<"cart" | "order">("cart");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Admin эрх шалгах
+  const isAdmin =
+    user?.publicMetadata?.role === "admin" ||
+    user?.privateMetadata?.role === "admin";
 
   // Alert dialog states
   const [alertDialog, setAlertDialog] = useState<{
@@ -55,10 +59,10 @@ export const Header = () => {
   const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
   const checkout = async (deliveryAddress: string) => {
-    if (!isLoggedIn) {
+    if (!isSignedIn) {
       showAlert(
         "Login Required",
-        "Та захиалга өгөхийн тулд нэвтэрнэ үү!",
+        "Та захиалга өгөхийн тулд эхлээд нэвтэрнэ үү!",
         "warning"
       );
       return;
@@ -81,25 +85,10 @@ export const Header = () => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      let userId = "";
-      if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          userId = payload.id;
-        } catch (err) {
-          console.error("token буруу байна:", err);
-          showAlert(
-            "Authentication Error",
-            "Invalid token. Please login again.",
-            "error"
-          );
-          return;
-        }
-      }
-
       const orderData = {
-        user: userId,
+        user: user?.id || `guest_${Date.now()}`,
+        userEmail: user?.emailAddresses[0]?.emailAddress || "",
+        userName: user?.fullName || "",
         foodOrderItems: cart.map((item) => ({
           food: item.id,
           quantity: item.quantity,
@@ -116,7 +105,6 @@ export const Header = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(orderData),
         }
@@ -208,22 +196,27 @@ export const Header = () => {
                 {tab === "cart" ? (
                   <CartTab onCheckout={checkout} isLoading={isLoading} />
                 ) : (
-                  <OrderTab isLoggedIn={isLoggedIn} />
+                  <OrderTab />
                 )}
               </div>
             </SheetHeader>
           </SheetContent>
         </Sheet>
 
-        {isLoggedIn ? (
+        {!isLoaded ? (
+          // Loading state
+          <div className="w-8 h-8 bg-gray-300 rounded-full animate-pulse"></div>
+        ) : isSignedIn ? (
           <div className="relative group">
             <button className="bg-red-500 p-2 rounded-full">
               <User className="text-white" />
             </button>
-            <div className="absolute hidden group-hover:block bg-white text-black p-4 shadow rounded top-full right-0">
-              <p>{email}</p>
-              <p className="text-xs text-gray-500">{role}</p>
-              {role === "ADMIN" && (
+            <div className="absolute hidden group-hover:block bg-white text-black p-4 shadow rounded top-full right-0 z-50">
+              <p className="font-medium">{user?.fullName}</p>
+              <p className="text-xs text-gray-500">
+                {user?.emailAddresses[0]?.emailAddress}
+              </p>
+              {isAdmin && (
                 <Link
                   href="/admin"
                   className="block mt-2 bg-blue-500 text-white px-2 py-1 rounded text-center hover:bg-blue-600"
@@ -231,26 +224,26 @@ export const Header = () => {
                   Admin Panel
                 </Link>
               )}
-              <button
-                onClick={() => {
-                  logout();
-                  clearCart();
-                }}
-                className="mt-2 bg-gray-200 px-2 py-1 rounded w-full"
-              >
-                Sign out
-              </button>
+              <div className="mt-2">
+                <SignOutButton>
+                  <button className="bg-gray-200 px-2 py-1 rounded w-full hover:bg-gray-300">
+                    Sign out
+                  </button>
+                </SignOutButton>
+              </div>
             </div>
           </div>
         ) : (
           <>
-            <Link href="/register">
-              <button className="border border-white px-3 py-1 rounded">
+            <Link href="/sign-up">
+              <button className="border border-white px-3 py-1 rounded hover:bg-white hover:text-black transition-colors">
                 Sign up
               </button>
             </Link>
-            <Link href="/log">
-              <button className="bg-red-500 px-3 py-1 rounded">Log in</button>
+            <Link href="/sign-in">
+              <button className="bg-red-500 px-3 py-1 rounded hover:bg-red-600 transition-colors">
+                Log in
+              </button>
             </Link>
           </>
         )}

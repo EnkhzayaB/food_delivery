@@ -59,7 +59,7 @@ export function AddDishModal({
       setIngredientsText(
         Array.isArray(editingFood.ingredients)
           ? editingFood.ingredients.join(", ")
-          : editingFood.ingredients.toString()
+          : String(editingFood.ingredients || "")
       );
     } else {
       setFormData({

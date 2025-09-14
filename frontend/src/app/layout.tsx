@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
-import { AuthProvider } from "@/context/authContext";
-import { SessionProvider } from "@/components/providers/SessionProvider";
 import { ConditionalHeader } from "@/components/layouts/ConditionalHeader";
+import { ClerkProvider } from "@clerk/nextjs";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -26,19 +25,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <SessionProvider>
-          <AuthProvider>
-            <CartProvider>
-              <ConditionalHeader />
-              {children}
-            </CartProvider>
-          </AuthProvider>
-        </SessionProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <CartProvider>
+            <ConditionalHeader />
+            {children}
+          </CartProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

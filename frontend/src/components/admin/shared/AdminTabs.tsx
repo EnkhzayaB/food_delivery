@@ -7,14 +7,11 @@ import { BarChart3, Package, LogOut, ChefHat } from "lucide-react";
 import { OrderDashboard } from "../order";
 import { DishesManager } from "../dishes";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/authContext";
-
 interface AdminTabsProps {
   initialOrders?: any[];
 }
 
 export function AdminTabs({ initialOrders = [] }: AdminTabsProps) {
-  const { email, logout } = useAuth();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -29,9 +26,8 @@ export function AdminTabs({ initialOrders = [] }: AdminTabsProps) {
     }
   }, [pathname]);
 
-  const handleLogout = () => {
-    logout();
-    window.location.href = "/log";
+  const handleBack = () => {
+    window.location.href = "/";
   };
 
   return (
@@ -52,15 +48,15 @@ export function AdminTabs({ initialOrders = [] }: AdminTabsProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-600 font-medium">{email}</div>
+            <div className="text-sm text-gray-600 font-medium">Admin User</div>
             <Button
-              onClick={handleLogout}
+              onClick={handleBack}
               variant="outline"
               size="sm"
               className="text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
             >
               <LogOut className="h-4 w-4 mr-2" />
-              Sign out
+              Back to Site
             </Button>
           </div>
         </div>

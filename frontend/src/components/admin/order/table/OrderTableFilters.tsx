@@ -81,7 +81,7 @@ export function OrderTableFilters({
                 initialFocus
                 mode="range"
                 defaultMonth={dateFilter?.from}
-                selected={dateFilter as { from?: Date; to?: Date }}
+                selected={dateFilter as { from: Date; to?: Date } | undefined}
                 onSelect={
                   setDateFilter as (
                     range: { from?: Date; to?: Date } | undefined

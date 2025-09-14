@@ -1,4 +1,3 @@
-export * from "./auth.route.js";
 export * from "./category.route.js";
 export * from "./food.route.js";
 export * from "./foodOrderItems.route.js";

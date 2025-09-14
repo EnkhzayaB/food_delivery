@@ -1,45 +1,49 @@
 "use client";
-import { useAuth } from "@/context/authContext";
+import { CartProvider } from "@/context/CartContext";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { SessionProvider } from "@/components/providers/SessionProvider";
-import { AuthProvider } from "@/context/authContext";
-import { CartProvider } from "@/context/CartContext";
 
 function Layout({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, role } = useAuth();
+  const { user, isSignedIn, isLoaded } = useUser();
   const router = useRouter();
 
+  // Admin эрх шалгах
+  const isAdmin =
+    user?.publicMetadata?.role === "admin" ||
+    user?.privateMetadata?.role === "admin";
+
   useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/log");
-      return;
-    }
+    if (isLoaded) {
+      if (!isSignedIn) {
+        router.push("/sign-in");
+        return;
+      }
 
-    if (role !== "ADMIN") {
-      router.push("/");
-      return;
+      if (!isAdmin) {
+        router.push("/");
+        return;
+      }
     }
-  }, [isLoggedIn, role, router]);
+  }, [isLoaded, isSignedIn, isAdmin, router]);
 
-  // Show loading while checking auth
-  if (!isLoggedIn || role !== "ADMIN") {
+  // Loading хүлээх
+  if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <p>Checking permissions...</p>
+          <p>Loading...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <SessionProvider>
-      <AuthProvider>
-        <CartProvider>{children}</CartProvider>
-      </AuthProvider>
-    </SessionProvider>
-  );
+  // Admin биш бол хоосон харуулах (redirect хийгдэж байгаа)
+  if (!isSignedIn || !isAdmin) {
+    return null;
+  }
+
+  return <CartProvider>{children}</CartProvider>;
 }
 export default Layout;

@@ -12,7 +12,6 @@ export const CartTab = ({ onCheckout, isLoading }: CartTabProps) => {
   const { cart, addToCart, removeFromCart } = useCart();
   const [deliveryAddress, setDeliveryAddress] = useState("");
 
-  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
   const total = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -61,6 +60,7 @@ export const CartTab = ({ onCheckout, isLoading }: CartTabProps) => {
             >
               <img
                 src={item.image}
+                alt={item.foodName}
                 className="w-16 h-16 rounded object-cover"
               />
               <div className="flex-1 px-3">
