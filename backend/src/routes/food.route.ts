@@ -14,7 +14,7 @@ const foodsRouter = express.Router();
 foodsRouter.get("/", getAllFoods);
 foodsRouter.get("/category/:categoryName", getCategoryPage);
 foodsRouter.post("/", createFood);
-foodsRouter.patch("/:foodId", updateFood);
+foodsRouter.put("/:foodId", updateFood);
 foodsRouter.delete("/:foodId", deleteFood);
 foodsRouter.get("/:foodId", getFoodByid);
 

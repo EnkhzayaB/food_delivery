@@ -4,9 +4,9 @@ import { Food } from "../models/index.js";
 export const getAllFoods = async (_request: Request, response: Response) => {
   try {
     const foods = await Food.find().populate("category");
-        response.json({ success: true, data: foods });
+    response.json({ success: true, data: foods });
   } catch (error) {
-        response.status(500).json({ success: false, error: error });
+    response.status(500).json({ success: false, error: error });
   }
 };
 
@@ -21,9 +21,9 @@ export const getCategoryPage = async (req: Request, res: Response) => {
 
     const filteredFoods = foods.filter((food) => food.category !== null);
 
-        res.json({ success: true, data: filteredFoods });
+    res.json({ success: true, data: filteredFoods });
   } catch (error) {
-        res.status(500).json({ success: false, error: error });
+    res.status(500).json({ success: false, error: error });
   }
 };
 
@@ -49,7 +49,12 @@ export const createFood = async (request: Request, response: Response) => {
       category,
     });
 
-    response.json({ success: true, data: createFood });
+    // Populate category information before sending response
+    const populatedFood = await Food.findById(createFood._id).populate(
+      "category"
+    );
+
+    response.json({ success: true, data: populatedFood });
   } catch (error) {
     response.status(500).json({ success: false, error: error });
   }
@@ -62,7 +67,7 @@ export const updateFood = async (request: Request, response: Response) => {
 
     const food = await Food.findByIdAndUpdate(foodId, updateFood, {
       new: true,
-    });
+    }).populate("category");
     response.status(200).json({ success: true, data: food });
   } catch (error) {
     response.status(500).json({ success: false, error: error });

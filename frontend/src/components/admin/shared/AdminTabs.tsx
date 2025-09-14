@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Package, LogOut } from "lucide-react";
+import { BarChart3, Package, LogOut, ChefHat } from "lucide-react";
 import { OrderDashboard } from "../order";
+import { DishesManager } from "../dishes";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 
@@ -21,6 +22,8 @@ export function AdminTabs({ initialOrders = [] }: AdminTabsProps) {
   useEffect(() => {
     if (pathname.includes("/orders")) {
       setActiveTab("orders");
+    } else if (pathname.includes("/dishes")) {
+      setActiveTab("dishes");
     } else {
       setActiveTab("dashboard");
     }
@@ -80,6 +83,13 @@ export function AdminTabs({ initialOrders = [] }: AdminTabsProps) {
             >
               <Package className="h-5 w-5" />
               Orders
+            </TabsTrigger>
+            <TabsTrigger
+              value="dishes"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-8 py-3 text-base font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-md gap-3 min-w-[140px]"
+            >
+              <ChefHat className="h-5 w-5" />
+              Food menu
             </TabsTrigger>
           </TabsList>
 
@@ -143,6 +153,10 @@ export function AdminTabs({ initialOrders = [] }: AdminTabsProps) {
 
           <TabsContent value="orders" className="m-0">
             <OrderDashboard initialOrders={initialOrders} />
+          </TabsContent>
+
+          <TabsContent value="dishes" className="m-0">
+            <DishesManager />
           </TabsContent>
         </Tabs>
       </div>
